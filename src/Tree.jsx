@@ -1,40 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Tree } from 'antd';
 const TreeNode = Tree.TreeNode;
 
-const x = 3;
-const y = 2;
-const z = 1;
-let gData = [];
-
-const generateData = (_level, _preKey, _tns) => {
-  const preKey = _preKey || '0';
-  const tns = _tns || gData;
-
-  const children = [];
-  for (let i = 0; i < x; i++) {
-    const key = `${preKey}-${i}`;
-    tns.push({ title: key, key });
-    if (i < y) {
-      children.push(key);
-    }
-  }
-  if (_level < 0) {
-    return tns;
-  }
-  const level = _level - 1;
-  children.forEach((key, index) => {
-    tns[index].children = [];
-    return generateData(level, key, tns[index].children);
-  });
-};
-generateData(z);
 
 class Demo extends React.Component {
-  state = {
-    gData,
-    expandedKeys: ['0-0', '0-0-0', '0-0-0-0'],
-  }
   onDragEnter = (info) => {
     console.log(info);
     // expandedKeys 需要受控时设置
@@ -49,64 +19,59 @@ class Demo extends React.Component {
     const dropPos = info.node.props.pos.split('-');
     const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
     // const dragNodesKeys = info.dragNodesKeys;
-    const loop = (data, key, callback) => {
-      data.forEach((item, index, arr) => {
-        if (item.key === key) {
-          return callback(item, index, arr);
-        }
-        if (item.children) {
-          return loop(item.children, key, callback);
-        }
-      });
-    };
-    const data = [...this.state.gData];
-    let dragObj;
-    loop(data, dragKey, (item, index, arr) => {
-      arr.splice(index, 1);
-      dragObj = item;
-    });
-    if (info.dropToGap) {
-      let ar;
-      let i;
-      loop(data, dropKey, (item, index, arr) => {
-        ar = arr;
-        i = index;
-      });
-      if (dropPosition === -1) {
-        ar.splice(i, 0, dragObj);
-      } else {
-        ar.splice(i + 1, 0, dragObj);
-      }
-    } else {
-      loop(data, dropKey, (item) => {
-        item.children = item.children || [];
-        // where to insert 示例添加到尾部，可以是随意位置
-        item.children.push(dragObj);
-      });
-    }
-    this.setState({
-      gData: data,
-    });
+    this.props.moveNode(dragKey, dropKey, dropPosition);
   }
   render() {
     const loop = data => data.map((item) => {
       if (item.children && item.children.length) {
-        return <TreeNode key={item.key} title={item.title}>{loop(item.children)}</TreeNode>;
+        return <TreeNode key={item.key} title={item.title} isLeaf={item.isLeaf}>
+          {loop(item.children)}
+        </TreeNode>;
       }
-      return <TreeNode key={item.key} title={item.title} />;
+      return <TreeNode key={item.key} title={item.title} isLeaf={item.isLeaf} />;
     });
     return (
       <Tree
         className="draggable-tree"
-        defaultExpandedKeys={this.state.expandedKeys}
+        defaultExpandedKeys={['root']}
         draggable
         onDragEnter={this.onDragEnter}
         onDrop={this.onDrop}
+        onSelect={(([selected])=>this.props.setActiveNode(selected))}
       >
-        {loop(this.state.gData)}
+        {loop(this.props.tree)}
       </Tree>
     );
   }
 }
 
-export default Demo;
+export default connect(
+  ({tree:{present},activeNodeKey})=>({
+    tree:present,
+    activeNodeKey
+  }),
+  (dispatch) =>({
+    moveNode: (source, target, position) => dispatch({
+      type:'TREE_MOVE_NODE',
+      payload: {
+        source,
+        target,
+        position,
+      }
+    }),
+    removeNode: (target) => dispatch({
+      type: 'TREE_REMOVE_NODE',
+      payload: target,
+    }),
+    setActiveNode: selectedKey => dispatch({
+      type:'ACTIVE_NODE_KEY_SET',
+      payload: selectedKey,
+    }),
+    updateNodeTitle: (target, name) => dispatch({
+      type: 'TREE_UPDATE_NODE',
+      payload: {
+        target: target, node: {name}, updateMode: 1
+      }
+    }),
+  })
+)(Demo);

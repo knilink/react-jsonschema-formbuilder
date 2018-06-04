@@ -8,9 +8,33 @@ function isEmptyObject(obj) {
   return true;
 }
 
+function isLeaf(node) {
+  return node.isLeaf;
+}
+
+
 function schema2tree(name, schema, uiSchema) {
   return [schema2node([name], schema, uiSchema)];
 }
+
+
+let forceChange = ((FORCE_CHANGE_KEY) => (obj) => {
+  // workaround for forcing rjsf to rerender because the schema still deep equal to after reordering properties.
+  if(FORCE_CHANGE_KEY in obj) {
+    delete obj[FORCE_CHANGE_KEY];
+  } else {
+    obj[FORCE_CHANGE_KEY] = undefined;
+  }
+})(`__${Date.now()}__`);
+
+try {
+  if(process.env.NODE_ENV === 'test'){
+    forceChange = a=>a;
+  }
+} catch (e) {
+
+}
+
 
 function schema2node(path, schema, uiSchema) {
   if(!schema) return null;
@@ -88,7 +112,7 @@ function schema2node(path, schema, uiSchema) {
     //path,
     schema,
     uiSchema,
-    leaf: true
+    isLeaf: true
   };
 }
 
@@ -270,7 +294,7 @@ function updateUiSchema(node, newChildren) {
   return newUiSchema;
 }
 
-function updateNode(oldNode, newChildren) {
+function updateNodeByNewChildren(oldNode, newChildren) {
   if(!oldNode.schema) {
     return Object.assign({}, oldNode, {children: newChildren});
   }
@@ -332,7 +356,7 @@ function _removeNodeByPath(tree, [head, ...tail], arrayItemsFlag=0) {
       return tree;
     }
     removed = true;
-    newTree.push(updateNode(node, newChildren));
+    newTree.push(updateNodeByNewChildren(node, newChildren));
   }
   return removed ? newTree : tree;
 }
@@ -363,13 +387,13 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
         continue;
       }
       added = true;
-      if(position < i) newTree.push(
+      if(position < 0) newTree.push(
         updateNodeParentKeyAndTitle(
           node2Add,
           getNodeParentKey(cn)
         )
       );
-      if(position === +i) {
+      if(position === 0) {
         let newNodeChildren = [
           ...cn.children||[],
           updateNodeParentKeyAndTitle(node2Add, cn.key)
@@ -377,11 +401,11 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
         if(arrayItemsFlag === 1) {
           newNodeChildren = updateArrayIndex(newNodeChildren);
         }
-        newTree.push(updateNode(cn, newNodeChildren));
+        newTree.push(updateNodeByNewChildren(cn, newNodeChildren));
       } else {
         newTree.push(cn);
       }
-      if(position > i) newTree.push(
+      if(position > 0) newTree.push(
         updateNodeParentKeyAndTitle(
           node2Add,
           getNodeParentKey(cn)
@@ -423,7 +447,7 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
     }
     added = true;
     newTree.push(
-      updateNode(node, newChildren)
+      updateNodeByNewChildren(node, newChildren)
     );
   }
   return added ? newTree : tree;
@@ -453,6 +477,7 @@ function _moveNodeByPath(tree, [sh,...st], [th,...tt], position, arrayItemsFlag=
         newTree.push(node);
         continue;
       };
+      if (isLeaf(node)) return tree;
       if(node.schema &&
          node.schema.type==='array' &&
          Array.isArray(node.schema.items)
@@ -476,13 +501,17 @@ function _moveNodeByPath(tree, [sh,...st], [th,...tt], position, arrayItemsFlag=
       updated = true;
       if(tt.length===1 && st.length === 1 &&
          node.schema && node.schema.type==='object') {
+        // reorder object properties
         let properties = {};
         for (const child of newChildren) {
           properties[child.title] = child.schema;
         }
-        const schema = Object.assign(
-          {},node.schema,{properties}
+        let schema = Object.assign(
+          {},node.schema,{
+            properties,
+          }
         );
+        forceChange(schema);
         newTree.push(Object.assign(
           {},node, {
             schema,
@@ -491,7 +520,7 @@ function _moveNodeByPath(tree, [sh,...st], [th,...tt], position, arrayItemsFlag=
         ));
       } else {
         newTree.push(
-          updateNode(node, newChildren)
+          updateNodeByNewChildren(node, newChildren)
         );
       }
     }
@@ -507,8 +536,9 @@ function _moveNodeByPath(tree, [sh,...st], [th,...tt], position, arrayItemsFlag=
       if(cn.title === sh) continue;
       if(cn.title === th) {
         updated = true;
-        if(position < i) newTree.push(node2move);
-        if(position === +i) {
+        if(position < 0) newTree.push(node2move);
+        if(position === 0) {
+          if(isLeaf(cn)) return tree;
           let newNodeChildren = [
             ...cn.children||[],
             updateNodeParentKeyAndTitle(node2move, cn.key)
@@ -516,11 +546,11 @@ function _moveNodeByPath(tree, [sh,...st], [th,...tt], position, arrayItemsFlag=
           if(arrayItemsFlag === 1) {
             newNodeChildren = updateArrayIndex(newNodeChildren);
           }
-          newTree.push(updateNode(cn, newNodeChildren));
+          newTree.push(updateNodeByNewChildren(cn, newNodeChildren));
         } else {
           newTree.push(cn);
         }
-        if(position > i) newTree.push(node2move);
+        if(position > 0) newTree.push(node2move);
       } else {
         newTree.push(cn);
       }
@@ -551,87 +581,98 @@ function moveNode(tree, sourceKey, targetKey, position) {
 }
 
 
-function _setNodeSchemaByPath(tree, [head,...tail], schema, uiSchema) {
-    let newTree = [];
-    let updated = false;
+function _updateNodeByPath(tree, [head,...tail], nodeUpdate) {
+  let newTree = [];
+  let updated = false;
   for (const node of tree) {
-    console.log(node.title,head);
-      if(node.title !== head) {
-        newTree.push(node);
-        continue;
+    if(node.title !== head) {
+      newTree.push(node);
+      continue;
+    }
+    let newNode = Object.assign({},node);
+    if(!tail.length) {
+      const {schema, uiSchema, title} = nodeUpdate;
+      let nu = Object.assign({},nodeUpdate);
+      delete nu.schema;
+      delete nu.uiSchema;
+      delete nu.title;
+      delete nu.children;
+      delete nu.key;
+      newNode = Object.assign(newNode, nu);
+      if(schema) {
+        updated = true;
+        const oldSchema = node.schema;
+        const newSchema = Object.assign({}, schema);
+        newSchema.type = oldSchema.type;
+        if(newSchema.type === 'object') {
+          newSchema.properties = oldSchema.properties;
+        }
+        if(newSchema.type === 'array') {
+          newSchema.items = oldSchema.items;
+          newSchema.additionalItems = oldSchema.items;
+        }
+        newNode.schema = newSchema;
       }
-      let newNode = Object.assign({},node);
-      if(!tail.length) {
-        if(schema) {
-          updated = true;
-          const oldSchema = node.schema;
-          const newSchema = Object.assign({},schema);
-          newSchema.type = oldSchema.type;
-          if(newSchema.type === 'object') {
-            newSchema.properties = oldSchema.properties;
-          }
-          if(newSchema.type === 'array') {
-            newSchema.items = oldSchema.items;
-            newSchema.additionalItems = oldSchema.items;
-          }
-          newNode.schema = newSchema;
-        }
-        if(uiSchema) {
-          updated = true;
-          const oldUiSchema = node.uiSchema;
-          const newUiSchema = Object.assign({}, uiSchema);
-          for(const i in node.uiSchema) {
-            if(!i.startsWith('ui:')) {
-              newUiSchema[i] = oldUiSchema[i];
-            }
-          }
-          if(isEmptyObject(newUiSchema)) {
-            delete newNode.uiSchema;
-          } else {
-            newNode.uiSchema = newUiSchema;
+      if(uiSchema) {
+        updated = true;
+        const oldUiSchema = node.uiSchema;
+        const newUiSchema = Object.assign({}, uiSchema);
+        for(const i in node.uiSchema) {
+          if(!i.startsWith('ui:')) {
+            newUiSchema[i] = oldUiSchema[i];
           }
         }
-        newTree.push(newNode);
-      } else {
-        if(node.children) {
-          const newChildren = _setNodeSchemaByPath(
-            node.children,
-            tail,
-            schema,
-            uiSchema
-          );
-          if(newChildren === node.children) {
-            return tree;
-          }
-          updated = true;
-          newTree.push(updateNode(node, newChildren));
+        if(isEmptyObject(newUiSchema)) {
+          delete newNode.uiSchema;
         } else {
+          newNode.uiSchema = newUiSchema;
+        }
+      }
+      if (title) {
+        newNode = updateNodeParentKeyAndTitle(
+          newNode, null, title
+        );
+      }
+      newTree.push(newNode);
+    } else {
+      if(node.children) {
+        const newChildren = _updateNodeByPath(
+          node.children,
+          tail,
+          nodeUpdate
+        );
+        if(newChildren === node.children) {
           return tree;
         }
+        updated = true;
+        newTree.push(updateNodeByNewChildren(node, newChildren));
+      } else {
+        return tree;
       }
     }
+  }
   return updated ? newTree : tree;
 }
 
-function setNodeSchemaByPath(tree, path, schema, uiSchema) {
-  return _setNodeSchemaByPath(tree, path, schema, uiSchema);
+function updateNodeByPath(tree, path, nodeUpdate) {
+  return _updateNodeByPath(tree, path, nodeUpdate);
 }
 
-function setNodeSchema(tree, key, schema, uiSchema) {
-  return _setNodeSchemaByPath(tree, key.split('.'), schema, uiSchema);
+function updateNode(tree, targetKey, nodeUpdate) {
+  return updateNodeByPath(tree, targetKey.split('.'), nodeUpdate);
 }
-
 
 module.exports = {
   schema2tree,
   removeNodeByPath,
   addNodeByPath,
   moveNodeByPath,
-  setNodeSchemaByPath,
+  updateNodeByPath,
 
   getNode,
   removeNode,
   addNode,
   moveNode,
-  setNodeSchema,
+  updateNode,
+  schema2node
 };

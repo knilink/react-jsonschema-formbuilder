@@ -3,7 +3,7 @@ const {
   removeNodeByPath,
   addNodeByPath,
   moveNodeByPath,
-  setNodeSchemaByPath
+  updateNodeByPath,
 } = require('./core');
 describe('core functions',function () {
   describe('Remove tree node', function() {
@@ -504,9 +504,9 @@ describe('core functions',function () {
         }
       };
       r(before,moveForwardAfter,'root.baz','root.foo',1);
-      r(before,moveForwardAfter,'root.baz','root.bar',0);
-      r(before,moveBackwardAfter,'root.foo','root.bar',2);
-      r(before,moveBackwardAfter,'root.foo','root.baz',1);
+      r(before,moveForwardAfter,'root.baz','root.bar',-1);
+      r(before,moveBackwardAfter,'root.foo','root.bar',1);
+      r(before,moveBackwardAfter,'root.foo','root.baz',-1);
     });
     it('move properties between objects', () => {
       const before = {
@@ -629,23 +629,42 @@ describe('core functions',function () {
         }
       };
       r(before,moveForwardAfter,'root.[items].2','root.[items].0',1);
-      //r(before,moveForwardAfter,'root.[items].2','root.[items].1',0);
-      //r(before,moveBackwardAfter,'root.[items].0','root.[items].1',2);
-      //r(before,moveBackwardAfter,'root.[items].0','root.[items].2',1);
+      r(before,moveForwardAfter,'root.[items].2','root.[items].1',-1);
+      r(before,moveBackwardAfter,'root.[items].0','root.[items].1',1);
+      r(before,moveBackwardAfter,'root.[items].0','root.[items].2',-1);
+    });
+    it('should not change if try to move to leaf',function () {
+      const data = {
+        schema: {
+          type:'object',
+          properties: {
+            foo:{type:'number'},
+            bar:{type:'string'},
+            baz:{type:'boolean'},
+          }
+        },
+        uiSchema: {
+          foo:{'ui:foo':'foo'},
+          bar:{'ui:bar':'bar'},
+          baz:{'ui:baz':'baz'},
+        }
+      };
+      const tree = schema2tree('root', data.schema, data.uiSchema);
+      const newTree = moveNodeByPath(tree, 'root.bar'.split('.'),'root.foo'.split('.'),0);
+      expect(newTree).toBe(tree);
     });
   });
   describe('Set tree node schema', function() {
-    function r(before, after, key, schema, uiSchema) {
+    function r(before, after, key, nodeUpdate) {
       const treeBefore = schema2tree(
         'root',
         before.schema,
         before.uiSchema
       );
-      const treeAfter = setNodeSchemaByPath(
+      const treeAfter = updateNodeByPath(
         treeBefore,
         key.split('.'),
-        schema,
-        uiSchema
+        nodeUpdate
       );
       const expectedTreeAfter = schema2tree(
         'root',
@@ -672,7 +691,7 @@ describe('core functions',function () {
         schema: {
           type:'object',
           properties:{
-            foo:{type:'string', title:'Foo'},
+            foofoo:{type:'string', title:'Foo'},
             bar:{type:'number'}
           }
         },
@@ -680,8 +699,7 @@ describe('core functions',function () {
           bar:{'ui:bar':'bar'}
         }
       };
-      r(before,after,'root.foo',{title:'Foo'},{});
+      r(before,after,'root.foo',{schema:{title:'Foo'},uiSchema:{},title:'foofoo'});
     });
   });
-
 });

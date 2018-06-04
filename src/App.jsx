@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { Provider, connect } from 'react-redux';
+import store from './store';
+//import logo from './logo.svg';
 //import './App.css';
 import './css';
 import { Layout, Menu, Icon } from 'antd';
 import Tree from './Tree';
+import FormView from './FormView';
+import FormJsonEditor from './FormJsonEditor';
+import NodeEditor from './node-editor';
 const { Header, Sider, Content } = Layout;
 
 
@@ -36,11 +41,23 @@ class App extends React.Component {
             />
           </Header>
           <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280 }}>
-            Content
+            <FormView />
+            <FormJsonEditor />
           </Content>
         </Layout>
+        <Sider width={this.props.activeNodeKey?window.innerWidth*0.36:0} style={{
+          overflow: 'auto',
+          background: '#fff',
+          boxShadow: '0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 2px 3px 0 rgba(0, 0, 0, 0.2)'
+        }} >
+          <NodeEditor />
+        </Sider>
       </Layout>
     );
   }
 }
-export default App;
+
+const AppContainer = connect(({activeNodeKey})=>({activeNodeKey}))(App);
+export default ()=>(<Provider store={store}>
+  <AppContainer />
+</Provider>)
