@@ -628,7 +628,8 @@ function _updateNodeByPath(tree, [head,...tail], nodeUpdate) {
           newNode.uiSchema = newUiSchema;
         }
       }
-      if (title) {
+      if (title && title !== newNode.title) {
+        updated = true;
         newNode = updateNodeParentKeyAndTitle(
           newNode, null, title
         );

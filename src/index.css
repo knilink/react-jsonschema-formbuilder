@@ -3,3 +3,12 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.form-builder-draggable-tree .ant-tree-node-content-wrapper {
+    width: calc(100% - 18px);
+}
+
+.tree-node-delete:hover {
+    color: #f04134;
+    transition: .2s;
+}

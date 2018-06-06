@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Tree } from 'antd';
+import TreeNodeTitle from './TreeNodeTitle';
 const TreeNode = Tree.TreeNode;
 
 
@@ -24,15 +25,18 @@ class Demo extends React.Component {
   render() {
     const loop = data => data.map((item) => {
       if (item.children && item.children.length) {
-        return <TreeNode key={item.key} title={item.title} isLeaf={item.isLeaf}>
+        return <TreeNode
+                 key={item.key}
+                 title={<TreeNodeTitle node={item}/>}
+                 isLeaf={item.isLeaf}>
           {loop(item.children)}
         </TreeNode>;
       }
-      return <TreeNode key={item.key} title={item.title} isLeaf={item.isLeaf} />;
+      return <TreeNode key={item.key} title={<TreeNodeTitle node={item}/>} isLeaf={item.isLeaf} />;
     });
     return (
       <Tree
-        className="draggable-tree"
+        className="form-builder-draggable-tree"
         defaultExpandedKeys={['root']}
         draggable
         onDragEnter={this.onDragEnter}

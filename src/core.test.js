@@ -701,5 +701,26 @@ describe('core functions',function () {
       };
       r(before,after,'root.foo',{schema:{title:'Foo'},uiSchema:{},title:'foofoo'});
     });
+    it('update node title', function () {
+      const before = {
+        schema: {
+          type:'object',
+          properties:{
+            foo:{type:'string'},
+            bar:{type:'number'}
+          }
+        },
+      };
+      const after = {
+        schema: {
+          type:'object',
+          properties:{
+            foofoo:{type:'string'},
+            bar:{type:'number'}
+          }
+        },
+      };
+      r(before,after,'root.foo',{title:'foofoo'});
+    });
   });
 });

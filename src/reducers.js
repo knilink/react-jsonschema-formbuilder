@@ -8,6 +8,7 @@ var {
 } = require('./core');
 
 var undoable = require('redux-undo').default;
+var { includeAction } = require('redux-undo');
 var { combineReducers } = require('redux');
 
 var DEFAULT_TREE_NAME = 'root';
@@ -96,17 +97,15 @@ function tree(state=emptyTree, action) {
   }
   case 'TREE_ADD_NODE': {
     const {
-      schema,
-      uiSchema,
       targetNodeKey,
-      position
-    } = action.paylosd;
+      position,
+      node2add
+    } = action.payload;
     return addNode(
       state,
       targetNodeKey,
-      schema,
-      uiSchema,
-      position
+      position,
+      node2add
     );
   }
   case 'TREE_REMOVE_NODE':
@@ -115,7 +114,7 @@ function tree(state=emptyTree, action) {
     const { source, target, position } = action.payload;
     return moveNode(state, source, target, position);
   }
-  case 'TREE_SET_NODE_SCHEMA': {
+  case 'TREE_UPDATE_NODE': {
     const { target, nodeUpdate } = action.payload;
     return updateNode(state, target, nodeUpdate);
   }
@@ -127,7 +126,16 @@ function tree(state=emptyTree, action) {
 function activeNodeKey(state=null, action) {
   switch(action.type) {
   case 'ACTIVE_NODE_KEY_SET':
-    return action.payload;
+    return action.payload || null;
+  case 'TREE_UPDATE_NODE':
+    const { target, nodeUpdate } = action.payload;
+    if(state && nodeUpdate.title) {
+      const path = state.split('.');
+      if (path[path.length-1]!==nodeUpdate.title) {
+        return path.slice(0,-1).join('.')+'.'+nodeUpdate.title;
+      }
+    }
+    return state;
   case 'TREE_SET_TREE':
   case 'TREE_CLEAR':
     return null;
@@ -137,7 +145,16 @@ function activeNodeKey(state=null, action) {
 }
 
 var reducer = combineReducers({
-  tree: undoable(tree),
+  tree: undoable(tree,{
+    filter: includeAction([
+      'TREE_UPDATE_NODE',
+      'TREE_SET_TREE',
+      'TREE_CLEAR',
+      'TREE_ADD_NODE',
+      'TREE_REMOVE_NODE',
+      'TREE_MOVE_NODE'
+    ]),
+  }),
   activeNodeKey,
 });
 

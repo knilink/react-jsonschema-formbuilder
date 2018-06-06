@@ -5,3 +5,4 @@ import 'antd/lib/input/style/css';
 import 'antd/lib/tree/style/css';
 import 'antd/lib/grid/style/css';
 import 'antd/lib/tabs/style/css';
+import 'antd/lib/popconfirm/style/css';
