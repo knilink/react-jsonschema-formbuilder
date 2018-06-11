@@ -21,12 +21,18 @@ export function getWidget(...args) {
   }
 }
 
+function TitleField(props) {
+  const { id, title, required } = props;
+  return <legend id={id}>{title}{required?'*':null}</legend>;
+}
+
 export function getDefaultRegistry() {
   const fields = {
     ...require("react-jsonschema-form/lib/components/fields").default,
     ArrayField,
     StringField,
     BooleanField,
+    TitleField
   };
   return {
     fields,

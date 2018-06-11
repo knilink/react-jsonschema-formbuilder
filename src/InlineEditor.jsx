@@ -25,37 +25,57 @@ export default class InlineEditor extends React.Component {
   }
   onStartEditing = e=>{
     e.stopPropagation();
+    e.preventDefault();
     this.setState(
       { editing: true },
       () => this.input && this.input.focus()
     );
   }
 
+  onCancelEditing = ()=>{
+    this.setState({
+      editing: false,
+      value: this.props.value
+    })
+  }
+
+  renderEditing() {
+    return (
+      <Input
+        ref={r => this.input=r}
+        value={this.state.value}
+        onBlur={this.onCompleteEditing}
+        onChange={this.onChange}
+        onKeyUp={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.keyCode === 13) {
+              this.onCompleteEditing();
+            } else if (e.keyCode === 27 ){
+              this.onCancelEditing();
+            }
+        }}
+      />
+    );
+  }
+
+  renderView() {
+    return (
+      <span>
+        {this.props.children}
+        <Icon
+          type="edit"
+          onClick={this.onStartEditing}
+        />
+      </span>
+    );
+  }
+
   render() {
     if(this.state.editing) {
-      return (
-        <Input
-          ref={r => this.input=r}
-          value={this.state.value}
-          onBlur={this.onCompleteEditing}
-          onChange={this.onChange}
-          onKeyUp={e => {
-              if (e.keyCode === 13) {
-                this.onCompleteEditing();
-              }
-          }}
-        />
-      );
+      return this.renderEditing();
     } else {
-      return (
-        <span>
-          {this.props.children}
-          <Icon
-            type="edit"
-            onClick={this.onStartEditing}
-          />
-        </span>
-      );
+      return this.renderView();
     }
   }
 }

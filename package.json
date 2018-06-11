@@ -1,6 +1,6 @@
 {
-  "name": "rjsfb",
-  "version": "0.1.0",
+  "name": "react-jsonschema-formbuilder",
+  "version": "0.0.0",
   "private": true,
   "dependencies": {
     "antd": "^3.5.4",

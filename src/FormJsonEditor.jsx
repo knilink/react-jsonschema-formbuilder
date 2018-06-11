@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Col,Input } from 'antd';
-const { TextArea } = Input;
+import { Row, Col } from 'antd';
+import JsonEditor from './JsonEditor';
 
 
-class FormJsonEditor extends React.Component {
+class FormJsonEditor extends Component {
   render() {
     const {schema, uiSchema, setTree } = this.props;
     return <Row><Col span={12}>
-      <TextArea
-        value={JSON.stringify(schema, null, 2)}
-        onChange={e=> setTree(JSON.parse(e.target.value))}
+      <JsonEditor
+        value={schema}
+        onChange={value=> setTree(value)}
         autosize
       />
     </Col><Col span={12}>
-      <TextArea
-        value={JSON.stringify(uiSchema, null, 2)}
-        onChange={e => setTree(null, JSON.parse(e.target.value))}
+      <JsonEditor
+        value={uiSchema}
+        onChange={value => setTree(null, value)}
         autosize
       />
     </Col></Row>;

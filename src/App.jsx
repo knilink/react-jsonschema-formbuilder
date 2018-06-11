@@ -8,7 +8,7 @@ import { Layout, Menu, Icon, Tabs } from 'antd';
 import Tree from './Tree';
 import FormView from './FormView';
 import FormJsonEditor from './FormJsonEditor';
-import NodeEditor from './node-editor';
+import NodeEditor from './Editor';
 import Toolbar from './Toolbar';
 const { Header, Sider, Content } = Layout;
 const { TabPane } = Tabs;
@@ -23,13 +23,22 @@ class App extends React.Component {
     });
   }
   render() {
+    const { settings } = this.props;
     return (
       <Layout>
         <Sider
           trigger={null}
           collapsible
           collapsed={this.state.collapsed}
-          style={{ background: '#fff', padding: 0 }}
+          width={settings.leftSiderWidth}
+          style={{
+            background: '#fff',
+            padding: 0,
+            overflow: 'auto',
+            height: '100vh',
+            position: 'fixed',
+            left: 0,
+          }}
         >
           <Tabs defaultActiveKey='0' size="small">
             <TabPane tab="Editor" style={{ padding: '8px' }} key="0">
@@ -39,7 +48,7 @@ class App extends React.Component {
             </TabPane>
           </Tabs>
         </Sider>
-        <Layout>
+        <Layout style={{ marginLeft: settings.leftSiderWidth }}>
           <Header style={{ background: '#fff', padding: 0 }}>
             <Toolbar />
           </Header>
@@ -51,7 +60,10 @@ class App extends React.Component {
         <Sider width={this.props.activeNodeKey?window.innerWidth*0.36:0} style={{
           overflow: 'auto',
           background: '#fff',
-          boxShadow: '0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 2px 3px 0 rgba(0, 0, 0, 0.2)'
+          boxShadow: '0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 2px 3px 0 rgba(0, 0, 0, 0.2)',
+          position: 'fixed',
+          height: '100vh',
+          right: 0
         }} >
           <NodeEditor />
         </Sider>
@@ -60,7 +72,13 @@ class App extends React.Component {
   }
 }
 
-const AppContainer = connect(({activeNodeKey})=>({activeNodeKey}))(App);
+const AppContainer = connect(({
+  activeNodeKey,
+  settings
+})=>({
+  activeNodeKey,
+  settings
+}))(App);
 export default ()=>(<Provider store={store}>
   <AppContainer />
 </Provider>)

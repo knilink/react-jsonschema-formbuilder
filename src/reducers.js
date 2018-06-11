@@ -83,6 +83,34 @@ var emptyTree =  schema2tree(
   us
 );
 
+function rjsfId2nodeKey(tree, rjsfId) {
+  for (const node of tree) {
+    if(node && node.title===rjsfId) {
+      return node.key;
+    }
+    if(rjsfId.startsWith(node.title) &&
+       rjsfId[node.title.length]==='_') {
+      if (node.children) {
+        rjsfId = rjsfId.slice(node.title.length+1);
+        const key = rjsfId2nodeKey(node.children, rjsfId);
+        if(key) return key;
+      }
+    }
+  }
+  return null;
+}
+
+function setTargetKeyByRjsfId(tree, action) {
+  const { rjsfId } = action.payload;
+  const target = rjsfId2nodeKey(tree, rjsfId);
+  if(!target) return null;
+  action = Object.assign({}, action, {
+    payload: Object.assign({}, action.payload, {target})
+  });
+  return action;
+}
+
+
 function tree(state=emptyTree, action) {
   switch(action.type) {
   case 'TREE_CLEAR':
@@ -90,7 +118,7 @@ function tree(state=emptyTree, action) {
   case 'TREE_SET_TREE':{
     const {name, schema, uiSchema} = action.payload;
     return schema2tree(
-      name || state[0] && state[0].title || DEFAULT_TREE_NAME,
+      name || (state[0] && state[0].title) || DEFAULT_TREE_NAME,
       schema || state[0].schema,
       uiSchema || state[0].uiSchema
     );
@@ -113,6 +141,10 @@ function tree(state=emptyTree, action) {
   case 'TREE_MOVE_NODE':{
     const { source, target, position } = action.payload;
     return moveNode(state, source, target, position);
+  }
+  case 'TREE_UPDATE_NODE_BY_RJSF_ID': {
+    action = setTargetKeyByRjsfId(state, action);
+    if(!action) return state;
   }
   case 'TREE_UPDATE_NODE': {
     const { target, nodeUpdate } = action.payload;
@@ -144,6 +176,16 @@ function activeNodeKey(state=null, action) {
   }
 }
 
+
+var defaultSettings = {
+  leftSiderWidth: 240
+};
+
+function settings(state=defaultSettings) {
+  return state;
+}
+
+
 var reducer = combineReducers({
   tree: undoable(tree,{
     filter: includeAction([
@@ -156,6 +198,18 @@ var reducer = combineReducers({
     ]),
   }),
   activeNodeKey,
+  settings,
 });
 
 module.exports = reducer;
+
+
+var { toIdSchema } = require('react-jsonschema-form/lib/utils');
+
+`toIdSchema(
+  schema,
+  id,
+  definitions,
+  formData = {},
+  idPrefix = "root"
+)`

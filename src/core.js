@@ -387,13 +387,28 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
         continue;
       }
       added = true;
-      if(position < 0) newTree.push(
-        updateNodeParentKeyAndTitle(
-          node2Add,
-          getNodeParentKey(cn)
-        )
-      );
+      if(position < 0) {
+        if(!arrayItemsFlag &&
+           tree.find(a=>a.title===node2Add.title)
+          ) {
+          // title already exists;
+          return tree;
+        }
+        newTree.push(
+          updateNodeParentKeyAndTitle(
+            node2Add,
+            getNodeParentKey(cn)
+          )
+        );
+      }
       if(position === 0) {
+        if(!arrayItemsFlag &&
+           cn.children.find(a=>a.title===node2Add.title)
+          ) {
+          // title already exists;
+          return tree;
+        }
+
         let newNodeChildren = [
           ...cn.children||[],
           updateNodeParentKeyAndTitle(node2Add, cn.key)
@@ -405,12 +420,20 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
       } else {
         newTree.push(cn);
       }
-      if(position > 0) newTree.push(
-        updateNodeParentKeyAndTitle(
-          node2Add,
-          getNodeParentKey(cn)
-        )
-      );
+      if(position > 0) {
+        if(!arrayItemsFlag &&
+           tree.find(a=>a.title===node2Add.title)
+          ) {
+          // title already exists;
+          return tree;
+        }
+        newTree.push(
+          updateNodeParentKeyAndTitle(
+            node2Add,
+            getNodeParentKey(cn)
+          )
+        );
+      }
     }
     if(!added)
       return tree;
@@ -629,6 +652,7 @@ function _updateNodeByPath(tree, [head,...tail], nodeUpdate) {
         }
       }
       if (title && title !== newNode.title) {
+        if (tree.find(a=>a.title===title)) return tree;
         updated = true;
         newNode = updateNodeParentKeyAndTitle(
           newNode, null, title

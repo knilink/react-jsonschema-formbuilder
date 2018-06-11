@@ -436,6 +436,19 @@ describe('core functions',function () {
       r(before,addBeforeAfter,'root.[items].0',-1,toadd,'foo');
       r(before,addAfterAfter,'root.[items].0',1,toadd,'foo');
     });
+    it('brother nodes should not have the same titles', function () {
+      const data = {
+        schema: {
+          type:'object',
+          properties: {
+            foo:{type:'number'},
+          }
+        }
+      };
+      const tree = schema2tree('root', data.schema, data.uiSchema);
+      const newTree = addNodeByPath(tree, 'root'.split('.'), 0, {title:'foo',schema:{type:'string'}});
+      expect(newTree).toBe(tree);
+    });
   });
   describe('Move tree node', function() {
     function r(before, after, source, target, position) {
@@ -651,6 +664,25 @@ describe('core functions',function () {
       };
       const tree = schema2tree('root', data.schema, data.uiSchema);
       const newTree = moveNodeByPath(tree, 'root.bar'.split('.'),'root.foo'.split('.'),0);
+      expect(newTree).toBe(tree);
+    });
+    it('brother nodes should not have the same titles', function () {
+      const data = {
+        schema: {
+          type:'object',
+          properties: {
+            foo:{type:'number'},
+            bar:{
+              type:'object',
+              properties: {
+                foo:{type:'string'}
+              }
+            },
+          }
+        }
+      };
+      const tree = schema2tree('root', data.schema, data.uiSchema);
+      const newTree = moveNodeByPath(tree, 'root.bar.foo'.split('.'),'root'.split('.'),0);
       expect(newTree).toBe(tree);
     });
   });

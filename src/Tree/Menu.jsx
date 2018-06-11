@@ -10,7 +10,7 @@ const basic = {
     type:'object',
     title:'Basic',
     properties: {
-      object: {type:'object', title:'Section'},
+      object: {type:'object', title:'Object'},
       text: {type:'string', title:'Text'},
       checkbox: {type:'boolean', title:'Checkbox'},
       dropdown: {
@@ -88,11 +88,9 @@ class AddItemMenu extends React.Component {
     const menuTree = menu;
     return (
       <Menu
-        defaultSelectedKeys={['1']}
-        defaultOpenKeys={['sub1']}
         mode="inline"
         theme="dark"
-        inlineCollapsed={this.state.collapsed}
+        defaultOpenKeys={['basic']}
       >
         {menuTree.map(a=>(
           <SubMenu key={a.key} title={a.schema.title || a.title}>

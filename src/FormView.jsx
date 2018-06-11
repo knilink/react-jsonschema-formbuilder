@@ -1,15 +1,32 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Form from "react-jsonschema-form";
+import Form from "./rjsf-patch/Form";
+import {FieldTemplate, ObjectFieldTemplate} from './rjsf-patch/Template';
 
+const schema = {
+  type: 'object',
+  properties: {
+    myField:{type:'string'}
+  }
+}
+
+const uiSchema =  {
+  myField: {
+    "ui:help": <div className="sidebar">some help</div>
+  }
+};
 
 class FormView extends React.Component {
   render() {
     if(!this.props.schema) {
       return null;
     }
-    console.log(this.props.schema);
-    return <Form schema={this.props.schema} uiSchema={this.props.uiSchema} />
+    return (<Form
+             schema={this.props.schema}
+             uiSchema={this.props.uiSchema}
+             FieldTemplate={FieldTemplate}
+    ObjectFieldTemplate={ObjectFieldTemplate}
+    />);
   }
 }
 
