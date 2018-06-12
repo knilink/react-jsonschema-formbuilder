@@ -77,16 +77,12 @@ function schema2node(path, schema, uiSchema) {
       }];
       if('additionalItems' in schema) {
         const nextPath = [...path,'additionalItems'];
-        children.push({
-          key: key+'.additionalItems',
-          title: 'additionalItems',
-          //path: nextPath,
-          children: [schema2node(
+        children.push(schema2node(
             nextPath,
             schema.additionalItems,
             uiSchema && uiSchema.additionalItems
-          )]
-        });
+          )
+        );
       }
     } else {
       children = [schema2node(
@@ -687,6 +683,55 @@ function updateNode(tree, targetKey, nodeUpdate) {
   return updateNodeByPath(tree, targetKey.split('.'), nodeUpdate);
 }
 
+var SEPERATOR = '_';
+function getNodeByRjsfId(tree, rjsfId) {
+  for (const node of tree) {
+    if(node && node.title===rjsfId) {
+      return node;
+    }
+    if(rjsfId.startsWith(node.title) &&
+       rjsfId[node.title.length]===SEPERATOR
+      ) {
+      if(node.schema.type==='array') {
+        rjsfId = rjsfId.slice(node.title.length+1);
+        const i = rjsfId.indexOf(SEPERATOR);
+        const index = i>0 ? rjsfId.slice(0,i) : rjsfId;
+        if(isNaN(index)) return null;
+        const rest = i>0 ? rjsfId.slice(i+1) : null;
+        if(Array.isArray(node.schema.items)) {
+          if((+index)<node.schema.items.length) {
+            let n = node.children.find(a=>a.title=== '[items]');
+            n = n && n.children.find(a=>a.title === index);
+            return rest ? n && getNodeByRjsfId(
+              n.children,
+              rjsfId.slice(i+1)
+            ) : n;
+          } else {
+            let n = node.children.find(a=>a.title==='additionalItems');
+            return rest ? n && getNodeByRjsfId(
+              n.children,
+              rest
+            ) : n;
+          }
+        } else {
+          let n = node.children.find(a=>a.title=== 'items');
+          return rest ? n && getNodeByRjsfId(
+            n.children,
+            rjsfId.slice(i+1)
+          ) : n;
+        }
+      }
+
+      if (node.children) {
+        rjsfId = rjsfId.slice(node.title.length+1);
+        const n = getNodeByRjsfId(node.children, rjsfId);
+        if(n) return n;
+      }
+    }
+  }
+  return null;
+}
+
 module.exports = {
   schema2tree,
   removeNodeByPath,
@@ -699,5 +744,6 @@ module.exports = {
   addNode,
   moveNode,
   updateNode,
-  schema2node
+  schema2node,
+  getNodeByRjsfId
 };
