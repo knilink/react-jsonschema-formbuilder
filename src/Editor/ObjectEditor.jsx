@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Select, Row, Col } from 'antd';
+import React from 'react';
+import { Select } from 'antd';
 import BasicEditor, { FormItemTemplate } from './BasicEditor';
 const { Option } = Select;
 

@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import JsonEditor from '../JsonEditor';
 import { Input } from 'antd';
-const { TextArea } = Input;
 
 export default class NodeJsonEditor extends React.Component {
   static get key() {
@@ -27,7 +26,7 @@ export default class NodeJsonEditor extends React.Component {
 
   render() {
     const { node, updateNode } = this.props;
-    const { schema, uiSchema, name } = node;
+    const { schema, uiSchema } = node;
     const { properties, items, additionalItems, ...rschema } = schema;
     return <div>
       <Input value={node.name} onChange={e => updateNode({name:e.target.value})} />

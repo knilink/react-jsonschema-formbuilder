@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { Input, Icon } from 'antd';
 
-const editableIcon = <Icon type="edit" />;
-
-export default class InlineEditor extends React.Component {
+export default class InlineEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -21,8 +19,9 @@ export default class InlineEditor extends React.Component {
   }
   onCompleteEditing = ()=>{
     this.setState({editing:false});
-    if (this.state.value !== this.props.value) {
-      this.props.onChange && this.props.onChange(this.state.value)
+    const newValue = this.state.value.trim();
+    if (newValue !== this.props.value) {
+      this.props.onChange && this.props.onChange(newValue)
     }
   }
   onStartEditing = e=>{

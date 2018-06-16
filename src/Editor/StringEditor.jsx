@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Input, InputNumber, Row, Col } from 'antd';
+import React from 'react';
+import { Input, InputNumber } from 'antd';
 import BasicEditor, { FormItemTemplate } from './BasicEditor';
 const { Group } = Input;
 

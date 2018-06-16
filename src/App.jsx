@@ -4,7 +4,7 @@ import store from './store';
 //import logo from './logo.svg';
 //import './App.css';
 import './css';
-import { Layout, Menu, Icon, Tabs } from 'antd';
+import { Layout, Tabs } from 'antd';
 import Tree from './Tree';
 import FormView from './FormView';
 import FormJsonEditor from './FormJsonEditor';

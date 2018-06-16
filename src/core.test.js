@@ -713,7 +713,7 @@ describe('core functions',function () {
       expect(newTree).toBe(tree);
     });
   });
-  describe('Set tree node schema', function() {
+  describe('update tree node', function() {
     function r(before, after, key, nodeUpdate) {
       const treeBefore = schema2tree(
         'root',
@@ -759,6 +759,30 @@ describe('core functions',function () {
         }
       };
       r(before,after,'root.foo',{schema:{name:'Foo'},uiSchema:{},name:'foofoo'});
+    });
+    it('update root name', function () {
+      const data = {
+        schema: {
+          type:'object',
+          properties:{
+            foo:{type:'string'},
+          }
+        },
+      };
+      const treeBefore = schema2tree(
+        'root_before',
+        data.schema,
+      );
+      const expectedTreeAfter = schema2tree(
+        'root_after',
+        data.schema,
+      );
+      const treeAfter = updateNodeByPath(
+        treeBefore,
+        ['root_before'],
+        {name: 'root_after'}
+      );
+      expect(treeAfter).toEqual(expectedTreeAfter);
     });
     it('update node name', function () {
       const before = {

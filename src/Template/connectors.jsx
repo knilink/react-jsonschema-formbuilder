@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import InlineEditor from '../InlineEditor';
 import { connect } from 'react-redux';
 import { Input, Icon, Popconfirm, Tooltip } from 'antd';
@@ -41,7 +41,7 @@ const ButtonGroup = connect(null, (dispatch,{id})=>({
   const { select, remove, id } = props;
   return (<Tooltip title={id} placement="right">
     <a href="#!"><Icon onClick={select} type="select" /></a>
-    <Popconfirm title="Sure?" onConfirm={remove}>
+    <Popconfirm title={`Remove ${id}?`} onConfirm={remove}>
       <a href="#!"><Icon type="delete" /></a>
     </Popconfirm>
   </Tooltip>);
@@ -75,7 +75,6 @@ export function fieldTemplateConnector(FieldTemplate) {
       label,
       description,
       help,
-      tree,
       schema,
       updateTitle,
       updateDescription,

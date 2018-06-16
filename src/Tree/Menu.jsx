@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import { Menu, Button, Icon } from 'antd';
+import { Menu } from 'antd';
 const { SubMenu, Item } = Menu;
 
 const { schema2node } = require('../core');
@@ -77,7 +77,7 @@ class AddItemMenu extends React.Component {
     });
   }
   onAddNode = (node2add)=>{
-    const { node, addNode } = this.props;
+    const { addNode } = this.props;
     const name = nameGen(
       node2add.name,
       this.props.node.children.map(a=>a.name)

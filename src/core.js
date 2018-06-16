@@ -151,7 +151,7 @@ function updateNodeParentKeyAndName(node, parentKey, name) {
   if(!parentKey) {
     parentKey = getNodeParentKey(node);
   }
-  const newKey = parentKey+'.'+name;
+  const newKey = parentKey ? parentKey+'.'+name : name;
   if(node.key === newKey) return node;
   return Object.assign(
     {}, node, {

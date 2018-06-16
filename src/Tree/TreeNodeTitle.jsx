@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Icon, Popconfirm, Input, Button } from 'antd';
+import { Icon, Popconfirm, Button } from 'antd';
 import InlineEditor from '../InlineEditor';
 import { Popover } from 'antd';
 import AddItemMenu from './Menu';
 const ButtonGroup = Button.Group;
 
 
-class TreeNodeTitle extends React.Component {
+class TreeNodeTitle extends Component {
   _render() {
     const { node, removeNode, updateNodeName } = this.props;
     const { key } = node;

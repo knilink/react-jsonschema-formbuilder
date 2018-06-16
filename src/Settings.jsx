@@ -18,7 +18,7 @@ const tipFormatter = ((flag=false)=>number=>{
   return flag ? number : window.innerWidth - number
 })()
 
-class Settings extends React.Component {
+class Settings extends Component {
   siderWidth() {
     const { leftSiderWidth, rightSiderWidth } = this.props.settings;
     return (<FormItemTemplate title={'Sider Width'}>

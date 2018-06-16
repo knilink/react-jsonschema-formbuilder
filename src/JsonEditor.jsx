@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Input } from 'antd';
 const { TextArea } = Input;
 function shallowEqual(objA, objB) {

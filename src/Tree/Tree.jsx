@@ -5,16 +5,16 @@ import TreeNodeTitle from './TreeNodeTitle';
 const TreeNode = Tree.TreeNode;
 
 
-class Demo extends React.Component {
+class Demo extends Component {
   onDragEnter = (info) => {
-    console.log(info);
+    // console.log(info);
     // expandedKeys 需要受控时设置
     // this.setState({
     //   expandedKeys: info.expandedKeys,
     // });
   }
   onDrop = (info) => {
-    console.log(info);
+    // console.log(info);
     const dropKey = info.node.props.eventKey;
     const dragKey = info.dragNode.props.eventKey;
     const dropPos = info.node.props.pos.split('-');

@@ -1,6 +1,5 @@
 var {
   schema2tree,
-  getNode,
   removeNode,
   addNode,
   moveNode,
@@ -117,7 +116,9 @@ function tree(state=emptyTree, action) {
   }
   case 'TREE_UPDATE_NODE': {
     const { target, nodeUpdate } = action.payload;
-    return updateNode(state, target, nodeUpdate);
+    const newState = updateNode(state, target, nodeUpdate);
+    console.log(newState);
+    return newState;
   }
   default :
     return state;
@@ -130,7 +131,7 @@ function activeNodeKey(state=null, action) {
     return action.payload || null;
   case 'TREE_UPDATE_NODE':
     const { target, nodeUpdate } = action.payload;
-    if(state && nodeUpdate.name) {
+    if(state === target && nodeUpdate.name) {
       const path = state.split('.');
       if (path[path.length-1]!==nodeUpdate.name) {
         return path.slice(0,-1).join('.')+'.'+nodeUpdate.name;
@@ -215,14 +216,3 @@ module.exports = function (state, action) {
   }
   return reducer(state, action);
 };
-
-
-var { toIdSchema } = require('react-jsonschema-form/lib/utils');
-
-`toIdSchema(
-  schema,
-  id,
-  definitions,
-  formData = {},
-  idPrefix = "root"
-)`
