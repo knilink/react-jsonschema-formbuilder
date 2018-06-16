@@ -8,7 +8,7 @@ export default class NodeJsonEditor extends React.Component {
     return 'json-editor';
   }
   static get name() {
-    return 'Json Editor';
+    return 'Json';
   }
   static filter(node) {
     return true;
@@ -27,10 +27,10 @@ export default class NodeJsonEditor extends React.Component {
 
   render() {
     const { node, updateNode } = this.props;
-    const { schema, uiSchema, title } = node;
+    const { schema, uiSchema, name } = node;
     const { properties, items, additionalItems, ...rschema } = schema;
     return <div>
-      <Input value={node.title} onChange={e => updateNode({title:e.target.value})} />
+      <Input value={node.name} onChange={e => updateNode({name:e.target.value})} />
       <JsonEditor value={rschema} onChange={schema=>updateNode({schema}) } autosize/>
       <JsonEditor value={uiSchema} onChange={uiSchema=>updateNode({uiSchema}) } autosize/>
     </div>;

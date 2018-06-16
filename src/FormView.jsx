@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Form from "./rjsf-patch/Form";
-import {FieldTemplate, ObjectFieldTemplate} from './rjsf-patch/Template';
+import {FieldTemplate, ObjectFieldTemplate} from './Template';
 
 const schema = {
   type: 'object',
@@ -22,11 +22,11 @@ class FormView extends React.Component {
       return null;
     }
     return (<Form
-             schema={this.props.schema}
-             uiSchema={this.props.uiSchema}
-             FieldTemplate={FieldTemplate}
-    ObjectFieldTemplate={ObjectFieldTemplate}
-    />);
+              schema={this.props.schema}
+              uiSchema={this.props.uiSchema}
+              FieldTemplate={FieldTemplate}
+              ObjectFieldTemplate={ObjectFieldTemplate}
+      />);
   }
 }
 

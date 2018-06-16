@@ -1,25 +1,11 @@
 import React, { Component } from 'react';
 import InlineEditor from '../InlineEditor';
-import { Input } from 'antd';
 import { connect } from 'react-redux';
+import { Input, Icon, Popconfirm, Tooltip } from 'antd';
+const { getNodeByRjsfId } = require('../core');
+const { TextArea } = Input;
 
-const TextArea = Input.TextArea;
-
-const REQUIRED_FIELD_SYMBOL = '*';
-
-function Label(props) {
-  const { label, required, id } = props;
-  if (!label) {
-    // See #312: Ensure compatibility with old versions of React.
-    return <div />;
-  }
-  return (
-    <label className="control-label" htmlFor={id}>
-      {label}
-      {required && <span className="required">{REQUIRED_FIELD_SYMBOL}</span>}
-    </label>
-  );
-}
+const ACTIVE_COLOR = '#bae7ff';
 
 class ExtendedInlineEditor extends InlineEditor {
   renderView() {
@@ -48,61 +34,27 @@ class InlineTextAreaEditor extends ExtendedInlineEditor {
   }
 }
 
-function DefaultTemplate(props) {
-  const {
-    id,
-    classNames,
-    label,
-    children,
-    errors,
-    help,
-    description,
-    hidden,
-    required,
-    displayLabel,
-  } = props;
-  if (hidden) {
-    return children;
-  }
+const ButtonGroup = connect(null, (dispatch,{id})=>({
+  select: ()=>dispatch({type:'ACTIVE_NODE_KEY_SET_BY_RJSF_ID',payload:id}),
+  remove: ()=>dispatch({type:'TREE_REMOVE_NODE_BY_RJSF_ID',payload:id})
+}))(props => {
+  const { select, remove, id } = props;
+  return (<Tooltip title={id} placement="right">
+    <a href="#!"><Icon onClick={select} type="select" /></a>
+    <Popconfirm title="Sure?" onConfirm={remove}>
+      <a href="#!"><Icon type="delete" /></a>
+    </Popconfirm>
+  </Tooltip>);
+});
 
-  return (
-    <div className={classNames}>
-      {displayLabel && <Label label={label} required={required} id={id} />}
-      {displayLabel && description ? description : null}
-      {children}
-      {errors}
-      {help}
-    </div>
-  );
-}
-
-function DefaultObjectFieldTemplate(props) {
-  const { TitleField, DescriptionField } = props;
-  return (
-    <fieldset>
-      {(props.uiSchema["ui:title"] || props.title) && (
-         <TitleField
-           id={`${props.idSchema.$id}__title`}
-           title={props.title || props.uiSchema["ui:title"]}
-           required={props.required}
-           formContext={props.formContext}
-         />
-      )}
-      {props.description && (
-         <DescriptionField
-           id={`${props.idSchema.$id}__description`}
-           description={props.description}
-           formContext={props.formContext}
-         />
-      )}
-      {props.properties.map(prop => prop.content)}
-    </fieldset>
-  );
-}
 
 export function fieldTemplateConnector(FieldTemplate) {
   return connect(
-    ({tree:{present}})=>({tree:present}),
+    ({tree:{present}, activeNodeKey, settings:{isInlineMode}},{id})=>{
+      const n = getNodeByRjsfId(present,id);
+      const active = n && n.key===activeNodeKey;
+      return {tree:present, active, isInlineMode};
+    },
     (dispatch,{id, schema, uiSchema}) => ({
       updateTitle: title => dispatch({
         type:'TREE_UPDATE_NODE_BY_RJSF_ID',
@@ -127,8 +79,12 @@ export function fieldTemplateConnector(FieldTemplate) {
       schema,
       updateTitle,
       updateDescription,
-      updateHelp
+      updateHelp,
+      active,
+      classNames,
+      isInlineMode
     } = props;
+    if (!isInlineMode) return <FieldTemplate {...props} />;
     const labelElement = label && (
       <ExtendedInlineEditor
         value={label}
@@ -150,23 +106,28 @@ export function fieldTemplateConnector(FieldTemplate) {
         {help}
       </ExtendedInlineEditor>
     );
-    return (<div>
-      {['object','array'].includes(schema.type)?null:<div className="pull-right"> {id} </div>}
+    return (<div className={classNames} style={active?{backgroundColor:ACTIVE_COLOR}:null}>
+      {['object','array'].includes(schema.type)?null:<div className="pull-right"> <ButtonGroup id={id} /> </div>}
       <FieldTemplate
-      _label={label}
-              _description={description}
-              _help={help}
-              {...props}
-              label={labelElement}
-              description={descriptionElement}
-              help={helpElement}
+        _label={label}
+        _description={description}
+        _help={help}
+        {...props}
+        classNames={null}
+        label={labelElement}
+        description={descriptionElement}
+        help={helpElement}
       /></div>);
   });
 }
 
 export function objectFieldTemplateConnector(ObjectFieldTemplate) {
   return connect(
-    ({tree:{present}})=>({tree:present}),
+    ({tree:{present}, activeNodeKey, settings:{isInlineMode}},{idSchema})=>{
+      const n = idSchema && idSchema.$id && getNodeByRjsfId(present,idSchema.$id);
+      const active = n && n.key===activeNodeKey;
+      return {tree:present, active, isInlineMode};
+    },
     (dispatch, {idSchema, schema}) => ({
       updateTitle: title => dispatch({
         type:'TREE_UPDATE_NODE_BY_RJSF_ID',
@@ -178,14 +139,25 @@ export function objectFieldTemplateConnector(ObjectFieldTemplate) {
       ),
     })
   )(props => {
-    const { idSchema, title, description, updateTitle, updateDescription } = props;
+    const {
+      idSchema,
+      title,
+      description,
+      updateTitle,
+      updateDescription,
+      active,
+      isInlineMode
+    } = props;
+    if(!isInlineMode) return <ObjectFieldTemplate {...props} />;
     const titleElement = title && (
-      <ExtendedInlineEditor
-        value={title}
-        onChange={updateTitle}>
-        {title}
-        <div className="pull-right"> {idSchema.$id} </div>
-      </ExtendedInlineEditor>
+      <span>
+        <ExtendedInlineEditor
+          value={title}
+          onChange={updateTitle}>
+          {title}
+        </ExtendedInlineEditor>
+        <span className="pull-right"> <ButtonGroup id={idSchema.$id} /> </span>
+      </span>
     );
     const descriptionElement = description && (
       <InlineTextAreaEditor
@@ -196,17 +168,15 @@ export function objectFieldTemplateConnector(ObjectFieldTemplate) {
     );
 
     return (
-      <ObjectFieldTemplate
-      _title={title}
-      _description={description}
-      {...props}
-      title={titleElement}
-      description={descriptionElement}
-      />
+      <div style={active?{backgroundColor:ACTIVE_COLOR}:null}>
+        <ObjectFieldTemplate
+          _title={title}
+          _description={description}
+          {...props}
+          title={titleElement}
+          description={descriptionElement}
+        />
+      </div>
     );
   });
 }
-
-export const FieldTemplate = fieldTemplateConnector(DefaultTemplate);
-export const ObjectFieldTemplate = objectFieldTemplateConnector(DefaultObjectFieldTemplate);
-export default { FieldTemplate, ObjectFieldTemplate };

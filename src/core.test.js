@@ -385,6 +385,26 @@ describe('core functions',function () {
       };
       r(before,after,'root.bar',0,toadd,'foo');
     });
+
+    it('should not add under leaf', () => {
+      const before = {
+        schema: {
+          type:'object',
+          properties: {
+            bar:{type:'string'}
+          }
+        },
+        uiSchema: {
+          bar:{'ui:bar':'bar'}
+        }
+      };
+      const toadd = {
+        schema:{type:'string'},
+        uiSchema:{'ui:foo':'foo'}
+      };
+      r(before,before,'root.bar',0,toadd,'foo');
+    });
+
     it('add array items', () => {
       const before = {
         schema: {
@@ -436,7 +456,7 @@ describe('core functions',function () {
       r(before,addBeforeAfter,'root.[items].0',-1,toadd,'foo');
       r(before,addAfterAfter,'root.[items].0',1,toadd,'foo');
     });
-    it('brother nodes should not have the same titles', function () {
+    it('brother nodes should not have the same names', function () {
       const data = {
         schema: {
           type:'object',
@@ -446,7 +466,7 @@ describe('core functions',function () {
         }
       };
       const tree = schema2tree('root', data.schema, data.uiSchema);
-      const newTree = addNodeByPath(tree, 'root'.split('.'), 0, {title:'foo',schema:{type:'string'}});
+      const newTree = addNodeByPath(tree, 'root'.split('.'), 0, {name:'foo',schema:{type:'string'}});
       expect(newTree).toBe(tree);
     });
   });
@@ -594,9 +614,9 @@ describe('core functions',function () {
         schema:{
           type: 'array',
           items: [
-            {title:'foo',type:'string'},
-            {title:'bar',type:'number'},
-            {title:'baz',type:'boolean'},
+            {name:'foo',type:'string'},
+            {name:'bar',type:'number'},
+            {name:'baz',type:'boolean'},
           ]
         },
         uiSchema:{
@@ -611,9 +631,9 @@ describe('core functions',function () {
         schema:{
           type: 'array',
           items: [
-            {title:'foo',type:'string'},
-            {title:'baz',type:'boolean'},
-            {title:'bar',type:'number'},
+            {name:'foo',type:'string'},
+            {name:'baz',type:'boolean'},
+            {name:'bar',type:'number'},
           ]
         },
         uiSchema:{
@@ -628,9 +648,9 @@ describe('core functions',function () {
         schema:{
           type: 'array',
           items: [
-            {title:'bar',type:'number'},
-            {title:'foo',type:'string'},
-            {title:'baz',type:'boolean'},
+            {name:'bar',type:'number'},
+            {name:'foo',type:'string'},
+            {name:'baz',type:'boolean'},
           ]
         },
         uiSchema:{
@@ -646,27 +666,34 @@ describe('core functions',function () {
       r(before,moveBackwardAfter,'root.[items].0','root.[items].1',1);
       r(before,moveBackwardAfter,'root.[items].0','root.[items].2',-1);
     });
-    it('should not change if try to move to leaf',function () {
+    it('should not drop under leaf',function () {
       const data = {
         schema: {
           type:'object',
           properties: {
             foo:{type:'number'},
-            bar:{type:'string'},
+            bar:{type:'object',properties:{barr:{type:'string'}}},
             baz:{type:'boolean'},
           }
         },
         uiSchema: {
           foo:{'ui:foo':'foo'},
-          bar:{'ui:bar':'bar'},
+          bar:{barr:{'ui:bar':'bar'}},
           baz:{'ui:baz':'baz'},
         }
       };
       const tree = schema2tree('root', data.schema, data.uiSchema);
-      const newTree = moveNodeByPath(tree, 'root.bar'.split('.'),'root.foo'.split('.'),0);
-      expect(newTree).toBe(tree);
+      expect(
+        moveNodeByPath(tree, 'root.baz'.split('.'),'root.foo'.split('.'),0)
+      ).toBe(tree);
+      expect(
+        moveNodeByPath(tree, 'root.bar.barr'.split('.'),'root.foo'.split('.'),0)
+      ).toBe(tree);
+      expect(
+        moveNodeByPath(tree, 'root.foo'.split('.'),'root.bar.barr'.split('.'),0)
+      ).toBe(tree);
     });
-    it('brother nodes should not have the same titles', function () {
+    it('brother nodes should not have the same names', function () {
       const data = {
         schema: {
           type:'object',
@@ -723,7 +750,7 @@ describe('core functions',function () {
         schema: {
           type:'object',
           properties:{
-            foofoo:{type:'string', title:'Foo'},
+            foofoo:{type:'string', name:'Foo'},
             bar:{type:'number'}
           }
         },
@@ -731,9 +758,9 @@ describe('core functions',function () {
           bar:{'ui:bar':'bar'}
         }
       };
-      r(before,after,'root.foo',{schema:{title:'Foo'},uiSchema:{},title:'foofoo'});
+      r(before,after,'root.foo',{schema:{name:'Foo'},uiSchema:{},name:'foofoo'});
     });
-    it('update node title', function () {
+    it('update node name', function () {
       const before = {
         schema: {
           type:'object',
@@ -752,7 +779,32 @@ describe('core functions',function () {
           }
         },
       };
-      r(before,after,'root.foo',{title:'foofoo'});
+      r(before,after,'root.foo',{name:'foofoo'});
+    });
+    it('update array name', function () {
+      const before = {
+        schema:{
+          type: 'object',
+          properties:{
+            foo:{
+            type: 'array',
+            items: [{'type': 'string'}]
+          }
+        }
+        }
+      };
+      const after = {
+        schema:{
+        type: 'object',
+        properties:{
+          bar:{
+            type: 'array',
+            items: [{'type': 'string'}]
+          }
+        }
+        }
+      };
+      r(before,after,'root.foo',{name:'bar'});
     });
   });
 });

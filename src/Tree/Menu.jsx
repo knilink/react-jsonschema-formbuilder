@@ -78,11 +78,11 @@ class AddItemMenu extends React.Component {
   }
   onAddNode = (node2add)=>{
     const { node, addNode } = this.props;
-    const title = nameGen(
-      node2add.title,
-      this.props.node.children.map(a=>a.title)
+    const name = nameGen(
+      node2add.name,
+      this.props.node.children.map(a=>a.name)
     );
-    addNode({...node2add, title});
+    addNode({...node2add, name});
   }
   render() {
     const menuTree = menu;
@@ -93,10 +93,10 @@ class AddItemMenu extends React.Component {
         defaultOpenKeys={['basic']}
       >
         {menuTree.map(a=>(
-          <SubMenu key={a.key} title={a.schema.title || a.title}>
+          <SubMenu key={a.key} title={a.schema.title || a.name}>
             {a.children.map(b=>(
               <Item key={b.key} onClick={()=>this.onAddNode(b)}>
-                {b.schema.title || b.title}
+                {b.schema.title || b.name}
               </Item>
             ))}
           </SubMenu>

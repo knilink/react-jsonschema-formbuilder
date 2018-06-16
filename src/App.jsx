@@ -10,10 +10,11 @@ import FormView from './FormView';
 import FormJsonEditor from './FormJsonEditor';
 import NodeEditor from './Editor';
 import Toolbar from './Toolbar';
+import Settings from './Settings';
 const { Header, Sider, Content } = Layout;
 const { TabPane } = Tabs;
 
-class App extends React.Component {
+class App extends Component {
   state = {
     collapsed: false,
   };
@@ -45,6 +46,7 @@ class App extends React.Component {
               <Tree />
             </TabPane>
             <TabPane tab="Settings" style={{ padding: '8px' }} key="1">
+              <Settings />
             </TabPane>
           </Tabs>
         </Sider>
@@ -52,12 +54,14 @@ class App extends React.Component {
           <Header style={{ background: '#fff', padding: 0 }}>
             <Toolbar />
           </Header>
-          <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280 }}>
+          <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280, width:settings.formWidth }}>
             <FormView />
+          </Content>
+          <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280 }}>
             <FormJsonEditor />
           </Content>
         </Layout>
-        <Sider width={this.props.activeNodeKey?window.innerWidth*0.36:0} style={{
+        <Sider width={this.props.activeNodeKey?settings.rightSiderWidth:0} style={{
           overflow: 'auto',
           background: '#fff',
           boxShadow: '0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 2px 3px 0 rgba(0, 0, 0, 0.2)',

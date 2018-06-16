@@ -39,7 +39,7 @@ try {
 function schema2node(path, schema, uiSchema) {
   if(!schema) return null;
   const key = path.join('.');
-  const title = path[path.length-1];
+  const name = path[path.length-1];
   if (schema.type === 'object') {
     let children = [];
     for (const i in schema.properties) {
@@ -52,7 +52,7 @@ function schema2node(path, schema, uiSchema) {
     }
     return {
       key,
-      title,
+      name,
       //path,
       schema,
       uiSchema,
@@ -65,7 +65,7 @@ function schema2node(path, schema, uiSchema) {
       const nextPath = [...path, '[items]'];
       children = [{
         key: key+'.[items]',
-        title: '[items]',
+        name: '[items]',
         //path: nextPath,
         children: schema.items.map(
           (a,i) => schema2node(
@@ -94,7 +94,7 @@ function schema2node(path, schema, uiSchema) {
 
     return {
       key,
-      title,
+      name,
       schema,
       uiSchema,
       children,
@@ -104,7 +104,7 @@ function schema2node(path, schema, uiSchema) {
   }
   return {
     key,
-    title,
+    name,
     //path,
     schema,
     uiSchema,
@@ -116,7 +116,7 @@ function getNodeByPath(tree, path) {
   let node;
   let children = tree;
   for(const i of path) {
-    node = children.find(a=>a.title===i);
+    node = children.find(a=>a.name===i);
     if(!node) return null;
     children = node.children;
   }
@@ -129,33 +129,33 @@ function getNode(tree, key) {
 
 function updateParentKey(tree, parentKey) {
   return tree.map(node=>{
-    const key = parentKey + '.' + node.title;
+    const key = parentKey + '.' + node.name;
     return Object.assign({}, node, {
-      key: parentKey + '.' + node.title,
+      key: parentKey + '.' + node.name,
     }, node.children && {
-      children: updateParentKey(key, node.children)
+      children: updateParentKey(node.children, key)
     });
   });
 }
 
 function getNodeParentKey(node) {
   return node.key.substring(
-    0, node.key.length - node.title.length - 1
+    0, node.key.length - node.name.length - 1
   );
 }
 
-function updateNodeParentKeyAndTitle(node, parentKey, title) {
-  if(!title) {
-    title = node.title;
+function updateNodeParentKeyAndName(node, parentKey, name) {
+  if(!name) {
+    name = node.name;
   }
   if(!parentKey) {
     parentKey = getNodeParentKey(node);
   }
-  const newKey = parentKey+'.'+title;
+  const newKey = parentKey+'.'+name;
   if(node.key === newKey) return node;
   return Object.assign(
     {}, node, {
-      title,
+      name,
       key: newKey,
     }, node.children && {
       children: updateParentKey(
@@ -172,7 +172,7 @@ function updateSchema(node, newChildren) {
   if (node.schema.type==='object') {
     let newProperties = {};
     for (const child of newChildren) {
-      newProperties[child.title] = child.schema;
+      newProperties[child.name] = child.schema;
     }
     newSchema.properties = newProperties;
   }
@@ -181,10 +181,10 @@ function updateSchema(node, newChildren) {
       // items is array
       newSchema = Object.assign({}, node.schema);
       const newItemsNode = newChildren.find(
-        a=>a.title==='[items]'
+        a=>a.name==='[items]'
       );
       const oldItemsNode = node.children.find(
-        a=>a.title==='[items]'
+        a=>a.name==='[items]'
       );
       if (newItemsNode !== oldItemsNode) {
         // items field updated
@@ -198,12 +198,10 @@ function updateSchema(node, newChildren) {
       } else {
         // additionalItems field updated
         const newAdditionalItemsNode = newChildren.find(
-          a=>a.title==='additionalItems'
+          a=>a.name==='additionalItems'
         );
         if(newAdditionalItemsNode){
-          newSchema.additionalItems = newItemsNode.children.map(
-            a=>a.schema
-          );
+          newSchema.additionalItems = newAdditionalItemsNode.schema;
         } else {
           delete newSchema.additionalItems;
         }
@@ -211,7 +209,7 @@ function updateSchema(node, newChildren) {
     } else {
       // items is not array
       const newItemsNode = newChildren.find(
-        a=>a.title === 'items'
+        a=>a.name === 'items'
       );
       if(newItemsNode) {
         newSchema.items = newItemsNode.schema;
@@ -226,14 +224,14 @@ function updateSchema(node, newChildren) {
 function updateUiSchema(node, newChildren) {
   let newUiSchema = {};
   for(const i in node.uiSchema) {
-    if(i.startsWith('ui:')) {
+    if(i.startsWith('ui:') || i==='classNames') {
       newUiSchema[i] = node.uiSchema[i];
     }
   }
   if (node.schema.type==='object') {
     for(const child of newChildren) {
       if(child.uiSchema) {
-        newUiSchema[child.title] = child.uiSchema;
+        newUiSchema[child.name] = child.uiSchema;
       }
     }
   }
@@ -241,10 +239,10 @@ function updateUiSchema(node, newChildren) {
     if (Array.isArray(node.schema.items)) {
       // items is array
       const newItemsNode = newChildren.find(
-        a=>a.title==='[items]'
+        a=>a.name==='[items]'
       );
       const oldItemsNode = node.children.find(
-        a=>a.title==='[items]'
+        a=>a.name==='[items]'
       );
       if (newItemsNode !== oldItemsNode) {
         // items field updated
@@ -269,7 +267,7 @@ function updateUiSchema(node, newChildren) {
           newUiSchema.items = node.uiSchema.items;
         }
         const newAdditionalItemsNode = newChildren.find(
-          a=>a.title==='additionalItems'
+          a=>a.name==='additionalItems'
         );
         if (newAdditionalItemsNode) {
           newUiSchema.additionalItems = newItemsNode.children.map(
@@ -280,7 +278,7 @@ function updateUiSchema(node, newChildren) {
     } else {
       // items is not array
       const newItemsNode = newChildren.find(
-        a=>a.title === 'items'
+        a=>a.name === 'items'
       );
       if(newItemsNode && newItemsNode.uiSchema) {
         newUiSchema.items = newItemsNode.uiSchema;
@@ -309,7 +307,7 @@ function updateNodeByNewChildren(oldNode, newChildren) {
 
 function updateArrayIndex(tree) {
   return tree.map(
-    (node, i) => node.title === i.toString() ? node : updateNodeParentKeyAndTitle(node,null,i.toString())
+    (node, i) => node.name === i.toString() ? node : updateNodeParentKeyAndName(node,null,i.toString())
   );
 }
 
@@ -321,14 +319,14 @@ function _removeNodeByPath(tree, [head, ...tail], arrayItemsFlag=0) {
   let removed = false;
   let newTree = [];
   if(!tail.length) {
-    let newTree = tree.filter(a=>a.title !== head);
+    let newTree = tree.filter(a=>a.name !== head);
     if(arrayItemsFlag === 2) {
       newTree = updateArrayIndex(newTree);
     }
     return newTree.length === tree.length ? tree : newTree;
   }
   for(const node of tree) {
-    if (node.title !== head) {
+    if (node.name !== head) {
       newTree.push(node);
       continue;
     }
@@ -378,36 +376,37 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
     let added = false;
     for (const i in tree) {
       const cn = tree[i];
-      if(cn.title!==head) {
+      if(cn.name!==head) {
         newTree.push(cn);
         continue;
       }
       added = true;
       if(position < 0) {
         if(!arrayItemsFlag &&
-           tree.find(a=>a.title===node2Add.title)
+           tree.find(a=>a.name===node2Add.name)
           ) {
-          // title already exists;
+          // name already exists;
           return tree;
         }
         newTree.push(
-          updateNodeParentKeyAndTitle(
+          updateNodeParentKeyAndName(
             node2Add,
             getNodeParentKey(cn)
           )
         );
       }
       if(position === 0) {
+        if(isLeaf(cn)) return tree;
         if(!arrayItemsFlag &&
-           cn.children.find(a=>a.title===node2Add.title)
+           cn.children.find(a=>a.name===node2Add.name)
           ) {
-          // title already exists;
+          // name already exists;
           return tree;
         }
 
         let newNodeChildren = [
           ...cn.children||[],
-          updateNodeParentKeyAndTitle(node2Add, cn.key)
+          updateNodeParentKeyAndName(node2Add, cn.key)
         ];
         if(arrayItemsFlag === 1) {
           newNodeChildren = updateArrayIndex(newNodeChildren);
@@ -418,13 +417,13 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
       }
       if(position > 0) {
         if(!arrayItemsFlag &&
-           tree.find(a=>a.title===node2Add.title)
+           tree.find(a=>a.name===node2Add.name)
           ) {
-          // title already exists;
+          // name already exists;
           return tree;
         }
         newTree.push(
-          updateNodeParentKeyAndTitle(
+          updateNodeParentKeyAndName(
             node2Add,
             getNodeParentKey(cn)
           )
@@ -439,7 +438,7 @@ function _addNodeByPath(tree, [head, ...tail], position, node2Add, arrayItemsFla
     return newTree;
   }
   for(const node of tree) {
-    if (node.title !== head) {
+    if (node.name !== head) {
       newTree.push(node);
       continue;
     }
@@ -492,7 +491,7 @@ function _moveNodeByPath(tree, [sh,...st], [th,...tt], position, arrayItemsFlag=
     let newTree = [];
     let updated = false;
     for (const node of tree) {
-      if (node.title !== sh) {
+      if (node.name !== sh) {
         newTree.push(node);
         continue;
       };
@@ -523,7 +522,7 @@ function _moveNodeByPath(tree, [sh,...st], [th,...tt], position, arrayItemsFlag=
         // reorder object properties
         let properties = {};
         for (const child of newChildren) {
-          properties[child.title] = child.schema;
+          properties[child.name] = child.schema;
         }
         let schema = Object.assign(
           {},node.schema,{
@@ -548,19 +547,19 @@ function _moveNodeByPath(tree, [sh,...st], [th,...tt], position, arrayItemsFlag=
   if(!st.length && !tt.length) {
     let newTree = [];
     let updated = false;
-    const node2move = tree.find(a=>a.title===sh);
+    const node2move = tree.find(a=>a.name===sh);
     if(!node2move) return tree;
     for (const i in tree) {
       const cn = tree[i];
-      if(cn.title === sh) continue;
-      if(cn.title === th) {
+      if(cn.name === sh) continue;
+      if(cn.name === th) {
         updated = true;
         if(position < 0) newTree.push(node2move);
         if(position === 0) {
           if(isLeaf(cn)) return tree;
           let newNodeChildren = [
             ...cn.children||[],
-            updateNodeParentKeyAndTitle(node2move, cn.key)
+            updateNodeParentKeyAndName(node2move, cn.key)
           ];
           if(arrayItemsFlag === 1) {
             newNodeChildren = updateArrayIndex(newNodeChildren);
@@ -604,17 +603,17 @@ function _updateNodeByPath(tree, [head,...tail], nodeUpdate) {
   let newTree = [];
   let updated = false;
   for (const node of tree) {
-    if(node.title !== head) {
+    if(node.name !== head) {
       newTree.push(node);
       continue;
     }
     let newNode = Object.assign({},node);
     if(!tail.length) {
-      const {schema, uiSchema, title} = nodeUpdate;
+      const {schema, uiSchema, name} = nodeUpdate;
       let nu = Object.assign({},nodeUpdate);
       delete nu.schema;
       delete nu.uiSchema;
-      delete nu.title;
+      delete nu.name;
       delete nu.children;
       delete nu.key;
       newNode = Object.assign(newNode, nu);
@@ -637,7 +636,7 @@ function _updateNodeByPath(tree, [head,...tail], nodeUpdate) {
         const oldUiSchema = node.uiSchema;
         const newUiSchema = Object.assign({}, uiSchema);
         for(const i in node.uiSchema) {
-          if(!i.startsWith('ui:')) {
+          if(!(i.startsWith('ui:') || i==='classNames')) {
             newUiSchema[i] = oldUiSchema[i];
           }
         }
@@ -647,11 +646,11 @@ function _updateNodeByPath(tree, [head,...tail], nodeUpdate) {
           newNode.uiSchema = newUiSchema;
         }
       }
-      if (title && title !== newNode.title) {
-        if (tree.find(a=>a.title===title)) return tree;
+      if (name && name !== newNode.name) {
+        if (tree.find(a=>a.name===name)) return tree;
         updated = true;
-        newNode = updateNodeParentKeyAndTitle(
-          newNode, null, title
+        newNode = updateNodeParentKeyAndName(
+          newNode, null, name
         );
       }
       newTree.push(newNode);
@@ -686,35 +685,35 @@ function updateNode(tree, targetKey, nodeUpdate) {
 var SEPERATOR = '_';
 function getNodeByRjsfId(tree, rjsfId) {
   for (const node of tree) {
-    if(node && node.title===rjsfId) {
+    if(node && node.name===rjsfId) {
       return node;
     }
-    if(rjsfId.startsWith(node.title) &&
-       rjsfId[node.title.length]===SEPERATOR
+    if(rjsfId.startsWith(node.name) &&
+       rjsfId[node.name.length]===SEPERATOR
       ) {
       if(node.schema.type==='array') {
-        rjsfId = rjsfId.slice(node.title.length+1);
+        rjsfId = rjsfId.slice(node.name.length+1);
         const i = rjsfId.indexOf(SEPERATOR);
         const index = i>0 ? rjsfId.slice(0,i) : rjsfId;
         if(isNaN(index)) return null;
         const rest = i>0 ? rjsfId.slice(i+1) : null;
         if(Array.isArray(node.schema.items)) {
           if((+index)<node.schema.items.length) {
-            let n = node.children.find(a=>a.title=== '[items]');
-            n = n && n.children.find(a=>a.title === index);
+            let n = node.children.find(a=>a.name=== '[items]');
+            n = n && n.children.find(a=>a.name === index);
             return rest ? n && getNodeByRjsfId(
               n.children,
               rjsfId.slice(i+1)
             ) : n;
           } else {
-            let n = node.children.find(a=>a.title==='additionalItems');
+            let n = node.children.find(a=>a.name==='additionalItems');
             return rest ? n && getNodeByRjsfId(
               n.children,
               rest
             ) : n;
           }
         } else {
-          let n = node.children.find(a=>a.title=== 'items');
+          let n = node.children.find(a=>a.name=== 'items');
           return rest ? n && getNodeByRjsfId(
             n.children,
             rjsfId.slice(i+1)
@@ -723,7 +722,7 @@ function getNodeByRjsfId(tree, rjsfId) {
       }
 
       if (node.children) {
-        rjsfId = rjsfId.slice(node.title.length+1);
+        rjsfId = rjsfId.slice(node.name.length+1);
         const n = getNodeByRjsfId(node.children, rjsfId);
         if(n) return n;
       }

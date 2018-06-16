@@ -3,6 +3,7 @@ import { Alert } from 'antd';
 import ArrayField from './ArrayField';
 import BooleanField from './BooleanField';
 import StringField from './StringField';
+import SchemaField from './SchemaField';
 import  { getWidget as _getWidget } from 'react-jsonschema-form/lib/utils';
 export * from 'react-jsonschema-form/lib/utils';
 
@@ -32,7 +33,8 @@ export function getDefaultRegistry() {
     ArrayField,
     StringField,
     BooleanField,
-    TitleField
+    TitleField,
+    SchemaField,
   };
   return {
     fields,

@@ -23,6 +23,11 @@ class Demo extends React.Component {
     this.props.moveNode(dragKey, dropKey, dropPosition);
   }
   render() {
+    const {
+      tree,
+      setActiveNode,
+      activeNodeKey
+    } = this.props;
     const loop = data => data.map((item) => {
       if (item.children && item.children.length) {
         return <TreeNode
@@ -38,12 +43,13 @@ class Demo extends React.Component {
       <Tree
         className="form-builder-draggable-tree"
         defaultExpandedKeys={['root']}
+        selectedKeys={[activeNodeKey]}
         draggable
         onDragEnter={this.onDragEnter}
         onDrop={this.onDrop}
-        onSelect={(([selected])=>this.props.setActiveNode(selected))}
+        onSelect={(([selected])=>setActiveNode(selected))}
       >
-        {loop(this.props.tree)}
+        {loop(tree)}
       </Tree>
     );
   }

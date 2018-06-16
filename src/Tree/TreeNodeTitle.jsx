@@ -8,28 +8,31 @@ const ButtonGroup = Button.Group;
 
 
 class TreeNodeTitle extends React.Component {
-  render() {
-    const { node, removeNode, updateNodeTitle } = this.props;
+  _render() {
+    const { node, removeNode, updateNodeName } = this.props;
     const { key } = node;
+    const isLeaf = node.isLeaf;
+    const isRoot = node.name === node.key;
+    const isArray = node.schema.type==='array';
     return <span style={{width:'100%',display:'block'}}>
       <InlineEditor
-        value={node.title}
-        onChange={title=>updateNodeTitle(key,title)}
+        value={node.name}
+        onChange={name=>updateNodeName(key,name)}
       >
-        {node.title}
-      </InlineEditor>
-      <span className="pull-right">
-        <ButtonGroup>
-          {!node.isLeaf ? <span className="form-builder-add-item-menu" onClick={e=>e.stopPropagation()}>
-            <Popover
-              placement="rightTop"
-              content={<AddItemMenu node={node} />}
-              trigger='click'
-            >
-              <Button size="small" icon="plus-circle-o"/>
-            </Popover>
-          </span> : null}
-          <span className="tree-node-delete" onClick={e=>e.stopPropagation()}>
+        {node.name}
+    </InlineEditor>
+    <span className="pull-right">
+    <ButtonGroup>
+    {!(isLeaf && isArray) ? <span className="form-builder-add-item-menu" onClick={e=>e.stopPropagation()}>
+      <Popover
+        placement="rightTop"
+        content={<AddItemMenu node={node} />}
+        trigger='click'
+      >
+        <Button size="small" icon="plus-circle-o"/>
+      </Popover>
+    </span> : null}
+          {!isRoot ? <span className="tree-node-delete" onClick={e=>e.stopPropagation()}>
             <Popconfirm
               placement="rightTop"
               title={`Delete "${key}"?`}
@@ -39,23 +42,26 @@ class TreeNodeTitle extends React.Component {
             >
               <Button size="small" type="danger" icon="close-circle"/>
             </Popconfirm>
-          </span>
+          </span>:null}
         </ButtonGroup>
       </span>
     </span>;
   }
-  _render() {
-    const { node, removeNode, updateNodeTitle } = this.props;
+  render() {
+    const { node, removeNode, updateNodeName } = this.props;
     const { key } = node;
+    const isLeaf = node.isLeaf;
+    const isRoot = node.name === node.key;
+    const isArray = node.schema.type==='array';
     return <span style={{width:'100%',display:'block'}}>
       <InlineEditor
-        value={node.title}
-        onChange={title=>updateNodeTitle(key,title)}
+        value={node.name}
+        onChange={name=>updateNodeName(key,name)}
       >
-        {node.title}
+        {node.name}
       </InlineEditor>
       <span className="pull-right">
-        {!node.isLeaf ? <span className="form-builder-add-item-menu" onClick={e=>e.stopPropagation()}>
+        {!(isLeaf || isArray) ? <span className="form-builder-add-item-menu" onClick={e=>e.stopPropagation()}>
           <Popover
             placement="rightTop"
             content={<AddItemMenu node={node} />}
@@ -64,7 +70,7 @@ class TreeNodeTitle extends React.Component {
             <Icon type="plus-circle-o" />
           </Popover>
         </span> : null}
-        <span className="tree-node-delete" onClick={e=>e.stopPropagation()}>
+        {!isRoot ? <span className="tree-node-delete" onClick={e=>e.stopPropagation()}>
           <Popconfirm
             placement="rightTop"
             title={`Delete "${key}"?`}
@@ -74,7 +80,7 @@ class TreeNodeTitle extends React.Component {
           >
             <Icon type="close-circle" />
           </Popconfirm>
-        </span>
+        </span> : null}
       </span>
     </span>;
   }
@@ -87,9 +93,9 @@ export default connect(
       type:'TREE_REMOVE_NODE',
       payload: key
     }),
-    updateNodeTitle: (key, title) => dispatch({
+    updateNodeName: (key, name) => dispatch({
       type:'TREE_UPDATE_NODE',
-      payload: {target:key,nodeUpdate:{title}}
+      payload: {target:key,nodeUpdate:{name}}
     })
   })
 )(TreeNodeTitle)

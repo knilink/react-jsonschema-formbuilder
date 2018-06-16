@@ -21,7 +21,9 @@ export default class InlineEditor extends React.Component {
   }
   onCompleteEditing = ()=>{
     this.setState({editing:false});
-    this.props.onChange && this.props.onChange(this.state.value)
+    if (this.state.value !== this.props.value) {
+      this.props.onChange && this.props.onChange(this.state.value)
+    }
   }
   onStartEditing = e=>{
     e.stopPropagation();
