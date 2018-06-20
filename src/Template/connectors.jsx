@@ -5,7 +5,9 @@ import { Input, Icon, Popconfirm, Tooltip } from 'antd';
 const { getNodeByRjsfId } = require('../core');
 const { TextArea } = Input;
 
-const ACTIVE_COLOR = '#bae7ff';
+const ACTIVE_STYLE = {backgroundColor:'#bae7ff'};
+//const ACTIVE_STYLE = {boxShadow:'0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)'};
+//const ACTIVE_STYLE = {boxShadow:'0 0 0 1000px rgba(0,0,0,0.16)','zIndex':-1};
 
 class ExtendedInlineEditor extends InlineEditor {
   renderView() {
@@ -105,7 +107,7 @@ export function fieldTemplateConnector(FieldTemplate) {
         {help}
       </ExtendedInlineEditor>
     );
-    return (<div className={classNames} style={active?{backgroundColor:ACTIVE_COLOR}:null}>
+    return (<div className={classNames} style={active?ACTIVE_STYLE:null}>
       {['object','array'].includes(schema.type)?null:<div className="pull-right"> <ButtonGroup id={id} /> </div>}
       <FieldTemplate
         _label={label}
@@ -167,7 +169,7 @@ export function objectFieldTemplateConnector(ObjectFieldTemplate) {
     );
 
     return (
-      <div style={active?{backgroundColor:ACTIVE_COLOR}:null}>
+      <div style={active?ACTIVE_STYLE:null}>
         <ObjectFieldTemplate
           _title={title}
           _description={description}

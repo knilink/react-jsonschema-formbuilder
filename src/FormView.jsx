@@ -8,18 +8,31 @@ class FormView extends React.Component {
     if(!this.props.schema) {
       return null;
     }
-    return (<Form
-              schema={this.props.schema}
-              uiSchema={this.props.uiSchema}
-              FieldTemplate={FieldTemplate}
-      ObjectFieldTemplate={ObjectFieldTemplate}
-      idPrefix={this.props.name}
-      />);
+    const {
+      name,
+      schema,
+      uiSchema,
+      liveValidate
+    } = this.props;
+    return (
+      <Form
+        schema={schema}
+        uiSchema={uiSchema}
+        liveValidate={liveValidate}
+        FieldTemplate={FieldTemplate}
+        ObjectFieldTemplate={ObjectFieldTemplate}
+        idPrefix={name}
+      />
+    );
   }
 }
 
-export default connect(({tree:{present:[{name, schema, uiSchema}]}})=>({
+export default connect(({
+  tree:{present:[{name, schema, uiSchema}]},
+  settings:{isLiveValidate}
+})=>({
+  name,
   schema,
   uiSchema,
-  name
+  liveValidate: isLiveValidate
 }))(FormView);

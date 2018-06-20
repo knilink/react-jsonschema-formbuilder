@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input } from 'antd';
+import { Input, Alert } from 'antd';
 const { TextArea } = Input;
 function shallowEqual(objA, objB) {
   if (objA === objB) {
@@ -65,11 +65,50 @@ export default class JsonEditor extends React.Component {
         error
       });
     }
-
   }
+
+  renderErrorMessage() {
+    const { error } = this.state;
+    if(!error) return null;
+    const errorMessage = error.toString();
+    const message = <a href="#!" onClick={()=>{
+        const matched = /position ([0-9]+)/.exec(errorMessage);
+        const position = matched ? matched[1] : -1;
+        const input = this.input.textAreaRef;
+        input.selectionStart = position;
+        input.selectionEnd = position;
+        input.focus();
+    }}>{error.toString()}</a>;
+    return <Alert message={message} type="error" showIcon />;
+  }
+
+  onClickPrettify = () => {
+    let { error } = this.state;
+    if (!error) {
+      this.setState({
+        string: JSON.stringify(this.props.value, null, 2)
+      });
+    }
+  }
+
   render() {
     const {string} = this.state;
-    return <TextArea {...this.props} value={string} onChange={this.onChange} />;
+    return <div>
+      {this.renderErrorMessage() ||(
+       <Alert
+         message={
+           <a href="#!" onClick={this.onClickPrettify}>Prettify</a>
+         }
+         type="success"
+         showIcon
+       />)
+      }
+      <TextArea
+        {...this.props}
+        ref={ref=>this.input=ref}
+        value={string}
+        onChange={this.onChange}
+      />
+    </div>
   }
-
 }

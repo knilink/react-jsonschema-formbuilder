@@ -14,3 +14,4 @@ import 'antd/lib/notification/style/css';
 import 'antd/lib/slider/style/css';
 import 'antd/lib/switch/style/css';
 import 'antd/lib/table/style/css';
+import 'antd/lib/list/style/css';

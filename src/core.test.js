@@ -693,7 +693,7 @@ describe('core functions',function () {
         moveNodeByPath(tree, 'root.foo'.split('.'),'root.bar.barr'.split('.'),0)
       ).toBe(tree);
     });
-    it('brother nodes should not have the same names', function () {
+    it('brother nodes should not have the same name', function () {
       const data = {
         schema: {
           type:'object',
@@ -711,6 +711,36 @@ describe('core functions',function () {
       const tree = schema2tree('root', data.schema, data.uiSchema);
       const newTree = moveNodeByPath(tree, 'root.bar.foo'.split('.'),'root'.split('.'),0);
       expect(newTree).toBe(tree);
+    });
+    it('move up', function () {
+      const before = {
+        schema: {
+          type:'object',
+          properties: {
+            foo:{
+              type:'object',
+              properties: {
+                bar:{type:'string'}
+              }
+            },
+          }
+        }
+      };
+      const after = {
+        schema: {
+          type:'object',
+          properties: {
+            foo:{
+              type:'object',
+              properties: {
+              }
+            },
+            bar:{type:'string'},
+          }
+        }
+      };
+      r(before, after, 'root.foo.bar','root',0);
+      r(before, after, 'root.foo.bar','root.foo',1);
     });
   });
   describe('update tree node', function() {
@@ -829,6 +859,39 @@ describe('core functions',function () {
         }
       };
       r(before,after,'root.foo',{name:'bar'});
+    });
+    it('update uiSchema', function () {
+      const before = {
+        schema: {
+          type: 'object',
+          properties:{
+            foo:{
+              type: 'string',
+            }
+          }
+        },
+        uiSchema: {
+          foo:{
+            'ui:foo1': 'foo1'
+          }
+        }
+      };
+      const after = {
+        schema: {
+          type: 'object',
+          properties:{
+            foo:{
+              type: 'string',
+            }
+          }
+        },
+        uiSchema: {
+          foo:{
+            'ui:foo2': 'foo2'
+          }
+        }
+      };
+      r(before,after,'root.foo', {uiSchema:{'ui:foo2': 'foo2'}});
     });
   });
 });

@@ -1,86 +1,24 @@
 var {
   schema2tree,
+  schema2node,
   removeNode,
   addNode,
   moveNode,
   updateNode,
   getNodeByRjsfId
 } = require('./core');
-
+var defaultSettings = require('./default/settings');
+var defaultMenuSchema = require('./default/menu');
+var defaultMenu = schema2node(['menu'], defaultMenuSchema.schema, defaultMenuSchema.uiSchema);
 var undoable = require('redux-undo').default;
 var { includeAction } = require('redux-undo');
 var { combineReducers } = require('redux');
 
 var DEFAULT_TREE_NAME = 'root';
 
-var s = {
-  "title": "A registration form",
-  "description": "A simple form example.",
-  "type": "object",
-  "required": [
-    "firstName",
-    "lastName"
-  ],
-  "properties": {
-    "firstName": {
-      "type": "string",
-      "title": "First name"
-    },
-    "lastName": {
-      "type": "string",
-      "title": "Last name"
-    },
-    "age": {
-      "type": "integer",
-      "title": "Age"
-    },
-    "bio": {
-      "type": "string",
-      "title": "Bio"
-    },
-    "password": {
-      "type": "string",
-      "title": "Password",
-      "minLength": 3
-    },
-    "telephone": {
-      "type": "string",
-      "title": "Telephone",
-      "minLength": 10
-    }
-  }
-};
-var us = {
-  "firstName": {
-    "ui:autofocus": true,
-    "ui:emptyValue": ""
-  },
-  "age": {
-    "ui:widget": "updown",
-    "ui:title": "Age of person",
-    "ui:description": "(earthian year)"
-  },
-  "bio": {
-    "ui:widget": "textarea"
-  },
-  "password": {
-    "ui:widget": "password",
-    "ui:help": "Hint: Make it strong!"
-  },
-  "date": {
-    "ui:widget": "alt-datetime"
-  },
-  "telephone": {
-    "ui:options": {
-      "inputType": "tel"
-    }
-  }
-};
-
 var emptyTree =  schema2tree(
   DEFAULT_TREE_NAME,
-  s,
-  us
+  {type:'object',properties:{}},
 );
 
 function tree(state=emptyTree, action) {
@@ -117,7 +55,6 @@ function tree(state=emptyTree, action) {
   case 'TREE_UPDATE_NODE': {
     const { target, nodeUpdate } = action.payload;
     const newState = updateNode(state, target, nodeUpdate);
-    console.log(newState);
     return newState;
   }
   default :
@@ -146,14 +83,6 @@ function activeNodeKey(state=null, action) {
   }
 }
 
-
-var defaultSettings = {
-  leftSiderWidth: 300,
-  rightSiderWidth: 360,
-  formWidth: 600,
-  isInlineMode: true
-};
-
 function settings(state=defaultSettings, action) {
   switch(action.type) {
   case 'SETTINGS_UPDATE':
@@ -163,6 +92,20 @@ function settings(state=defaultSettings, action) {
   }
 }
 
+
+function menu(state=defaultMenu, action) {
+  switch(action.type) {
+  case 'MENU_SET': {
+    const {schema, uiSchema} = action.payload;
+    return schema2node(['menu'], schema, uiSchema);
+  }
+  case 'MENU_DEFAULT': {
+    return defaultMenu;
+  }
+  default:
+    return state;
+  }
+}
 
 var reducer = combineReducers({
   tree: undoable(tree,{
@@ -177,6 +120,7 @@ var reducer = combineReducers({
   }),
   activeNodeKey,
   settings,
+  menu
 });
 
 module.exports = function (state, action) {

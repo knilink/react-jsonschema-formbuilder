@@ -487,7 +487,7 @@ function addNode(tree, targetKey, position, newNode) {
 
 function _moveNodeByPath(tree, [sh,...st], [th,...tt], position, arrayItemsFlag=0) {
   if(!sh) return tree;
-  if(sh===th) {
+  if(sh===th && tt.length) {
     let newTree = [];
     let updated = false;
     for (const node of tree) {
@@ -544,6 +544,7 @@ function _moveNodeByPath(tree, [sh,...st], [th,...tt], position, arrayItemsFlag=
     }
     return updated ? newTree : tree;
   }
+
   if(!st.length && !tt.length) {
     let newTree = [];
     let updated = false;

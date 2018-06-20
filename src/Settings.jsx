@@ -1,83 +1,160 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import { Slider, Col, Row, Switch } from 'antd';
-
-function FormItemTemplate({title, children}) {
-  return (<Row className="ant-form-item">
-    <Col className="ant-form-item-label">
-      <label>{title}</label>
-    </Col>
-    <Col  className="ant-form-item-control-wrapper">
-      {children}
-    </Col>
-  </Row>);
-}
+import { Slider, Switch, Button, List } from 'antd';
 
 const tipFormatter = ((flag=false)=>number=>{
   flag = !flag;
   return flag ? number : window.innerWidth - number
 })()
 
-class Settings extends Component {
+class Settings extends React.Component {
   siderWidth() {
     const { leftSiderWidth, rightSiderWidth } = this.props.settings;
-    return (<FormItemTemplate title={'Sider Width'}>
-      <Slider
-        included
-        min={0}
-        max={window.innerWidth}
-        tipFormatter={ tipFormatter }
-        range
-        value={[leftSiderWidth, window.innerWidth-rightSiderWidth]}
-        onChange={([left, right])=>{
-            this.props.updateSettings({
-              leftSiderWidth: left > 200 ? left : 200,
-              rightSiderWidth: window.innerWidth - right
-            });
-        }}
-      />
-    </FormItemTemplate>);
+    return {
+      key:'sider-width',
+      title: 'Sider Width',
+      description: (
+        <Slider
+          included
+          min={0}
+          max={window.innerWidth}
+          tipFormatter={ tipFormatter }
+          range
+          value={[leftSiderWidth, window.innerWidth-rightSiderWidth]}
+          onChange={([left, right])=>{
+              this.props.updateSettings({
+                leftSiderWidth: left > 200 ? left : 200,
+                rightSiderWidth: window.innerWidth - right
+              });
+          }}
+        />
+      )
+    }
   }
 
   formWidth() {
-    return (<FormItemTemplate title={'Form Width'}>
-      <Slider
-        min={0}
-        max={window.innerWidth}
-        value={this.props.settings.formWidth}
-        onChange={value => {
-            this.props.updateSettings({
-              formWidth: value,
-            });
-        }}
-      />
-    </FormItemTemplate>);
+    return {
+      key:'form-item',
+      title: 'Form Width',
+      description: (
+        <Slider
+          min={0}
+          max={window.innerWidth}
+          value={this.props.settings.formWidth}
+          onChange={value => {
+              this.props.updateSettings({
+                formWidth: value,
+              });
+          }}
+        />
+      )
+    };
   }
 
   inlineMode() {
-    return (<FormItemTemplate title={'Inline Mode'}>
-      <Switch
-        onChange={v => this.props.updateSettings({isInlineMode: v}) }
-        checked={this.props.settings.isInlineMode}
-      />
-    </FormItemTemplate>);
+    return {
+      key: 'inline-mode',
+      title: 'Inline Mode',
+      actions: [
+        <Switch
+          onChange={
+            v => this.props.updateSettings({isInlineMode: v})
+          }
+          checked={this.props.settings.isInlineMode}
+        />
+      ]
+    };
   }
 
+  liveValidate() {
+    return {
+      key: 'live-validate',
+      title: 'Live Validate',
+      actions: [
+        <Switch
+          onChange={v => this.props.updateSettings({isLiveValidate: v}) }
+          checked={this.props.settings.isLiveValidate}
+        />
+      ]
+    };
+  }
+
+  menu() {
+    const {
+      setTree,
+      rootNode,
+      setMenu,
+      menu
+    } = this.props;
+    return {
+      key: 'menu',
+      title: 'Menu',
+      description: [
+        (<Button key="edit" onClick={
+          () => setTree(menu)
+        }>Edit Menu</Button>),
+        (<Button key="set" onClick={
+          () => setMenu(rootNode)
+        }>Set Menu</Button>)
+      ]
+    }
+  }
+  listItems() {
+    return [
+      this.siderWidth(),
+      this.formWidth(),
+      this.inlineMode(),
+      this.liveValidate(),
+      this.menu(),
+    ];
+  }
+
+  renderItem(a) {
+    const { Item, Item:{Meta} } = List;
+    return (
+      <Item
+        key={a.key}
+        actions={a.actions}
+      >
+        <Meta
+          title={a.title}
+          description={a.description}
+        />
+      </Item>
+    );
+  }
+
+
   render() {
-    return <form className="ant-form ant-form-horizontal">
-      {this.siderWidth()}
-      {this.formWidth()}
-      {this.inlineMode()}
-    </form>;
+    return (<List
+              itemLayout="horizontal"
+              dataSource={this.listItems()}
+              renderItem={this.renderItem}
+    />);
   }
 }
 
 export default connect(
-  ({settings}) => ({settings}),
+  ({settings, tree:{present:[rootNode]}, menu}) => ({settings, rootNode, menu}),
   dispatch => ({
     updateSettings: payload => dispatch({
       type:'SETTINGS_UPDATE',
       payload
+    }),
+    setTree: ({schema, uiSchema}) => dispatch({
+      type:'TREE_SET_TREE',
+      payload: {
+        name: 'menu',
+        schema,
+        uiSchema,
+      }
+    }),
+    setMenu: ({schema,uiSchema}) => dispatch({
+      type:'MENU_SET',
+      payload: {
+        schema,
+        uiSchema
+      }
     })
   })
 )(Settings);

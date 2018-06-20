@@ -44,7 +44,9 @@ export default class StringEditor extends BasicEditor {
     </FormItemTemplate>);
   }
 
-  render() {
+
+
+  _render() {
     return <form className="ant-form ant-form-horizontal">
       {this.name()}
       <fieldset>
@@ -57,6 +59,7 @@ export default class StringEditor extends BasicEditor {
         <legend>uiSchema</legend>
         {this.widgets()}
         {this.classNames()}
+        {this.placeholder()}
         {this.help()}
       </fieldset>
     </form>;

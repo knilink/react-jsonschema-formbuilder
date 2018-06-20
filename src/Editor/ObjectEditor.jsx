@@ -22,7 +22,7 @@ export default class ObjectEditor extends BasicEditor {
       <Select
         mode="multiple"
         style={{ width: '100%' }}
-        onChange={required=>updateSchema({required})}
+        onChange={required=>updateSchema({required:required.length?required:undefined})}
         value={node.schema.required}
       >
         {(node.children||[]).map(node=>(<Option key={node.name}>{node.name}</Option>))}
