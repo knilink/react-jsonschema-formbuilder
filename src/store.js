@@ -48,8 +48,7 @@ const form = {
       "ui:emptyValue": ""
     },
     "age": {
-      "ui:widget": "updown",
-      "ui:title": "Age of person"
+      "ui:widget": "updown"
     },
     "bio": {
       "ui:widget": "textarea"

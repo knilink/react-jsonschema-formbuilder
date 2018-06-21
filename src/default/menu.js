@@ -3,7 +3,7 @@ const basic = {
     type:'object',
     title:'Basic',
     properties: {
-      object: {type:'object', title:'Object', porperties: {}},
+      object: {type:'object', title:'Object', properties: {}},
       text: {type:'string', title:'Text'},
       checkbox: {type:'boolean', title:'Checkbox'},
       dropdown: {

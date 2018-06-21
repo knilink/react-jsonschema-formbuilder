@@ -18,3 +18,8 @@ body {
     text-decoration: underline;
     cursor: pointer;
 }
+
+/* fix bootstrap label blocking the template buttons */
+.checkbox {
+    position: inherit
+}

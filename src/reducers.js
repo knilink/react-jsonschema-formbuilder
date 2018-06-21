@@ -83,6 +83,16 @@ function activeNodeKey(state=null, action) {
   }
 }
 
+function formData(state={}, action) {
+  switch(action.type) {
+  case 'FORM_DATA_SET':
+    return action.payload;
+  default:
+    return state;
+  }
+}
+
+
 function settings(state=defaultSettings, action) {
   switch(action.type) {
   case 'SETTINGS_UPDATE':
@@ -120,7 +130,8 @@ var reducer = combineReducers({
   }),
   activeNodeKey,
   settings,
-  menu
+  menu,
+  formData
 });
 
 module.exports = function (state, action) {

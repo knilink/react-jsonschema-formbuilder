@@ -4,10 +4,9 @@ import store from './store';
 //import logo from './logo.svg';
 //import './App.css';
 import './css';
-import { Layout, Tabs } from 'antd';
+import { Layout, Tabs, Card } from 'antd';
 import Tree from './Tree';
-import FormView from './FormView';
-import FormJsonEditor from './FormJsonEditor';
+import {FormView, SchemaView, UiSchemaView, FormDataView} from './views';
 import NodeEditor from './Editor';
 import Toolbar from './Toolbar';
 import Settings from './Settings';
@@ -54,11 +53,19 @@ class App extends Component {
           <Header style={{ background: '#fff', padding: 0 }}>
             <Toolbar />
           </Header>
-          <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280, width:settings.formWidth }}>
-            <FormView />
-          </Content>
-          <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280 }}>
-            <FormJsonEditor />
+          <Content style={{ minHeight: 280, padding:'12px 8px' }}>
+            <Card bordered={false} style={{width: settings.formWidth, margin: '12px 8px', display: 'inline-block', verticalAlign: 'top'}}>
+              <FormView />
+            </Card>
+            <Card title="Schema" style={{margin: '12px 8px', width: 400, display: 'inline-block', verticalAlign: 'top'}}>
+              <SchemaView />
+            </Card>
+            <Card title="Ui Schema" style={{margin: '12px 8px', width: 400, display: 'inline-block', verticalAlign: 'top'}}>
+              <UiSchemaView />
+            </Card>
+            <Card title="Form Data" style={{margin: '12px 8px', width: 400, display: 'inline-block', verticalAlign: 'top'}}>
+              <FormDataView />
+            </Card>
           </Content>
         </Layout>
         <Sider width={this.props.activeNodeKey?settings.rightSiderWidth:0} style={{
@@ -92,4 +99,7 @@ export default ()=>(<Provider store={store}>
    type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
    onClick={this.toggle}
    />
+ */
+/*
+   <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280, width:settings.formWidth }}>
  */

@@ -54,16 +54,16 @@ class Toolbar extends React.Component {
     return <Row>
       <input ref={ref => this.loadFile = ref } type="file" accept="application/json" onChange={this.open} hidden/>
       <Tooltip title="Open">
-        <Button onClick={()=>this.loadFile && this.loadFile.click() }><Icon type="folder-open" /></Button>
+        <Button style={{'marginLeft':12}} onClick={()=>this.loadFile && this.loadFile.click() }><Icon type="folder-open" /></Button>
       </Tooltip>
       <Tooltip title="Save">
-        <Button onClick={this.save}><Icon type="save" /></Button>
+        <Button style={{'marginLeft':12}} onClick={this.save}><Icon type="save" /></Button>
       </Tooltip>
       <Tooltip title="Undo">
-        <Button onClick={undo} disabled={!past.length}><Icon type="left" /></Button>
+        <Button style={{'marginLeft':12}} onClick={undo} disabled={!past.length}><Icon type="left" /></Button>
       </Tooltip>
       <Tooltip title="Redo">
-        <Button onClick={redo} disabled={!future.length}><Icon type="right" /></Button>
+        <Button style={{'marginLeft':12}} onClick={redo} disabled={!future.length}><Icon type="right" /></Button>
       </Tooltip>
     </Row>;
   }
