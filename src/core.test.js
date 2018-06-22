@@ -234,6 +234,36 @@ describe('core functions',function () {
       };
       r(before,after,'root.items.foo');
     });
+    it('remove associated required properties', ()=>{
+      const before = {
+        schema: {
+          type:'object',
+          required: ['foo','bar'],
+          properties: {
+            foo:{type:'string'},
+            bar:{type:'string'},
+          }
+        }
+      };
+      const after = {
+        schema: {
+          type:'object',
+          required: ['bar'],
+          properties: {
+            bar:{type:'string'},
+          }
+        }
+      };
+      const after2 = {
+        schema: {
+          type:'object',
+          properties: {
+          }
+        }
+      };
+      r(before,after,'root.foo');
+      r(after,after2,'root.bar');
+    });
   });
   describe('add tree node', function() {
     function r(before, after, key, position, add, name) {
@@ -892,6 +922,31 @@ describe('core functions',function () {
         }
       };
       r(before,after,'root.foo', {uiSchema:{'ui:foo2': 'foo2'}});
+    });
+    it('update required', function () {
+      const before = {
+        schema: {
+          type: 'object',
+          required: ['foo'],
+          properties:{
+            foo:{
+              type: 'string',
+            }
+          }
+        },
+      };
+      const after = {
+        schema: {
+          type: 'object',
+          required: ['bar'],
+          properties:{
+            bar:{
+              type: 'string',
+            }
+          }
+        }
+      };
+      r(before,after,'root.foo', {name: 'bar'});
     });
   });
 });

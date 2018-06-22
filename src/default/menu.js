@@ -6,18 +6,9 @@ const basic = {
       object: {type:'object', title:'Object', properties: {}},
       text: {type:'string', title:'Text'},
       checkbox: {type:'boolean', title:'Checkbox'},
-      dropdown: {
-        type:'string',
-        title: 'Dropdown',
-        enum: ['option-1','option-2','option-3'],
-        enumNames: ['Option 1', 'Option 2', 'Option 3']
-      },
-      number: {type:'number', title:'Number'},
-      textarea: {type:'string', title:'Text Area'},
-      datetime: {type:'string', title: 'Date Time'},
-      multiChoices: {
+      checkboxes: {
         "type": "array",
-        "title": "Multiple Choices",
+        "title": "Check Boxes",
         "items": {
           "type": "string",
           "enum": [
@@ -27,14 +18,22 @@ const basic = {
           ]
         },
         "uniqueItems": true
-      }
-
+      },
+      dropdown: {
+        type:'string',
+        title: 'Dropdown',
+        enum: ['option-1','option-2','option-3'],
+        enumNames: ['Option 1', 'Option 2', 'Option 3']
+      },
+      number: {type:'number', title:'Number'},
+      textarea: {type:'string', title:'Text Area'},
+      datetime: {type:'string', title: 'Date Time'},
     }
   },
   uiSchema: {
     textarea: { 'ui:widget': 'textarea' },
     datetime: { 'ui:widget': 'datetime' },
-    multiChoices: {
+    checkboxes: {
       "ui:widget": "checkboxes"
     }
   }

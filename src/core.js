@@ -350,7 +350,23 @@ function _removeNodeByPath(tree, [head, ...tail], arrayItemsFlag=0) {
       return tree;
     }
     removed = true;
-    newTree.push(updateNodeByNewChildren(node, newChildren));
+    let newNode = updateNodeByNewChildren(node, newChildren);
+    let newSchema = null;
+    if (tail.length===1 &&
+        (newSchema = newNode.schema) &&
+        newSchema.required
+       ) {
+      const newRequired = newSchema.required.filter(a=>a!==tail[0]);
+      if(newRequired.length !== newSchema.required.length) {
+        newNode.schema = Object.assign(
+          {},
+          newSchema, {
+            required: newRequired.length ? newRequired : undefined
+          }
+        );
+      }
+    }
+    newTree.push(newNode);
   }
   return removed ? newTree : tree;
 }
@@ -666,7 +682,27 @@ function _updateNodeByPath(tree, [head,...tail], nodeUpdate) {
           return tree;
         }
         updated = true;
-        newTree.push(updateNodeByNewChildren(node, newChildren));
+        let newNode = updateNodeByNewChildren(node, newChildren);
+        // update required
+        let newSchema = null;
+        if (tail.length===1 &&
+            nodeUpdate.name &&
+            (newSchema = newNode.schema) &&
+            newSchema.required &&
+            newSchema.required.includes(tail[0])
+           ) {
+          newNode.schema = Object.assign(
+            {},
+            newSchema, {
+              required: newSchema.required.map(
+                a=>a===tail[0]?nodeUpdate.name:a
+              )
+            }
+          );
+        }
+        newTree.push(
+          newNode
+        );
       } else {
         return tree;
       }

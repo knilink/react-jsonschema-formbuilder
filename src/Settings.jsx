@@ -92,10 +92,10 @@ class Settings extends React.Component {
       description: [
         (<Button key="edit" onClick={
           () => setTree(menu)
-        }>Edit Menu</Button>),
+        }>Customize </Button>),
         (<Button key="set" onClick={
           () => setMenu(rootNode)
-        }>Set Menu</Button>)
+        }>Apply Change</Button>)
       ]
     }
   }

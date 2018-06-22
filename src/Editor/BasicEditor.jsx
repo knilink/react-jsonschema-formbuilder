@@ -370,6 +370,33 @@ function pattern({node:{schema}, updateSchema:update}) {
   }
 }
 
+function required({node:{schema},updateSchema: update}) {
+  const key = 'required';
+  const title = 'Required';
+  if(schema.type!=='object') return [];
+  if (!schema.required) {
+    return [(
+      <Menu.Item key={key} onClick={()=>update({[key]:[]})}>
+        {title}
+      </Menu.Item>
+    )];
+  }
+  return [
+    null,
+    (<FormItemTemplate key={key} title="Required" remove={()=>update({[key]: undefined})}>
+      <Select
+        mode="multiple"
+        style={{ width: '100%' }}
+        onChange={required=>update({required})}
+        value={schema.required}
+      >
+        {Object.keys(schema.properties||{}).map(a=>(<Option key={a}>{a}</Option>))}
+      </Select>
+    </FormItemTemplate>)
+  ];
+}
+
+
 export default class BasicEditor extends React.Component {
   static get key() {
     return 'basic-editor';
@@ -380,7 +407,7 @@ export default class BasicEditor extends React.Component {
   }
 
   static filter(node) {
-    return node.schema && node.schema.type !== 'array';
+    return node.schema;
   }
 
   name() {
@@ -391,6 +418,7 @@ export default class BasicEditor extends React.Component {
     const l = [
       title,
       description,
+      required,
       widget,
       classNames,
       help,

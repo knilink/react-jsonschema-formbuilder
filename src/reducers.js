@@ -47,7 +47,8 @@ function tree(state=emptyTree, action) {
     );
   }
   case 'TREE_REMOVE_NODE':
-    return removeNode(state,action.payload);
+    const newState = removeNode(state,action.payload);
+    return newState.length ? newState : emptyTree;
   case 'TREE_MOVE_NODE':{
     const { source, target, position } = action.payload;
     return moveNode(state, source, target, position);
@@ -131,7 +132,7 @@ var reducer = combineReducers({
   activeNodeKey,
   settings,
   menu,
-  formData
+  formData,
 });
 
 module.exports = function (state, action) {

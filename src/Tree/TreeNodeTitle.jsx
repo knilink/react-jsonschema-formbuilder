@@ -48,18 +48,31 @@ class TreeNodeTitle extends Component {
     </span>;
   }
   render() {
-    const { node, removeNode, updateNodeName } = this.props;
-    const { key } = node;
+    const { node, removeNode, updateNodeName, searchValue } = this.props;
+    const { name, key } = node;
     const isLeaf = node.isLeaf;
     const isRoot = node.name === node.key;
     const isArray = node.schema.type==='array';
+    const indexBefore = node.name.toLowerCase().indexOf(searchValue);
+    const indexAfter = indexBefore + searchValue.length;
     return <span style={{width:'100%',display:'block'}}>
-      <InlineEditor
-        value={node.name}
-        onChange={name=>updateNodeName(key,name)}
-      >
-        {node.name}
-      </InlineEditor>
+      {searchValue && indexBefore >= 0 ? (
+         <InlineEditor
+           value={node.name}
+           onChange={name=>updateNodeName(key,name)}
+           >
+           {name.slice(0, indexBefore)}
+           <span style={{ color: '#f50' }}>{name.slice(indexBefore, indexAfter)}</span>
+           {name.slice(indexAfter)}
+         </InlineEditor>
+      ) : (
+         <InlineEditor
+           value={node.name}
+           onChange={name=>updateNodeName(key,name)}
+           >
+           {name}
+         </InlineEditor>
+      )}
       <span className="pull-right">
         {!(isLeaf || isArray) ? <span className="form-builder-add-item-menu" onClick={e=>e.stopPropagation()}>
           <Popover
