@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Button } from 'antd';
 import JsonEditor from '../JsonEditor';
-import { mapValues } from 'lodash';
 
 function name2title(name) {
   if(!name) return name;
@@ -42,13 +41,17 @@ function json2schema(data, name) {
         items: json2schema(data[0])
       };
     }
+    let properties = {};
+    for (const i in data) {
+      const s = json2schema(data[i], i);
+      if(s) {
+        properties[i] = s;
+      }
+    }
     return {
       type: 'object',
       title,
-      properties: mapValues(
-        data,
-        (value, name)=>json2schema(value, name)
-      )
+      properties
     };
   }
   return undefined;
@@ -65,7 +68,7 @@ export default connect(
       type:'TREE_SET_TREE',
       payload: {
         name: 'root',
-        schema: json2schema(formData, 'form'),
+        schema: console.log(json2schema(formData, 'form')) || json2schema(formData, 'form'),
         uiSchema: {}
       }
     })
@@ -74,7 +77,7 @@ export default connect(
   <JsonEditor
     value={formData}
     onChange={value=> setFormData(value)}
-  autosize
+    autosize
   />
   <Button type="primary" onClick={()=>genForm(formData)}>Gen Form</Button>
   <Button onClick={()=>setFormData({})}>Clear</Button>

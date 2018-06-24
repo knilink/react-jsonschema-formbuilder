@@ -118,6 +118,16 @@ function menu(state=defaultMenu, action) {
   }
 }
 
+function menuOpenKeys(state=[], action) {
+  switch(action.type) {
+  case 'MENU_OPEN_KEYS_SET':
+    return action.payload;
+  default:
+    return state;
+  }
+}
+
+
 var reducer = combineReducers({
   tree: undoable(tree,{
     filter: includeAction([
@@ -133,6 +143,7 @@ var reducer = combineReducers({
   settings,
   menu,
   formData,
+  menuOpenKeys
 });
 
 module.exports = function (state, action) {

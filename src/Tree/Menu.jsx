@@ -14,15 +14,6 @@ function nameGen(name, occupied) {
 }
 
 class AddItemMenu extends React.Component {
-  state = {
-    collapsed: false,
-  }
-
-  toggleCollapsed = () => {
-    this.setState({
-      collapsed: !this.state.collapsed,
-    });
-  }
   onAddNode = (node2add)=>{
     const { addNode } = this.props;
     const name = nameGen(
@@ -32,21 +23,35 @@ class AddItemMenu extends React.Component {
     addNode({...node2add, name});
   }
   render() {
-    const menuTree = this.props.menu.children;
+    const {
+      menu:{
+        children: menuTree
+      },
+      menuOpenKeys,
+      menuOpenChange,
+    } = this.props;
+    console.log(menuOpenKeys);
     return (
       <Menu
         mode="inline"
         theme="dark"
-        defaultOpenKeys={['basic']}
+        openKeys={menuOpenKeys}
+        onOpenChange={menuOpenChange}
       >
         {menuTree.map(a=>(
-          <SubMenu key={a.key} title={a.schema.title || a.name}>
-            {a.children.map(b=>(
-              <Item key={b.key} onClick={()=>this.onAddNode(b)}>
-                {b.schema.title || b.name}
-              </Item>
-            ))}
-          </SubMenu>
+          a.schema && a.schema.type==='object' && a.children && a.children.length ? (
+            <SubMenu key={a.key} title={a.schema.title || a.name}>
+              {a.children.map(b=>(
+                <Item key={b.key} onClick={()=>this.onAddNode(b)}>
+                  {b.schema.title || b.name}
+                </Item>
+              ))}
+            </SubMenu>
+          ):(
+            <Item key={a.key} onClick={()=>this.onAddNode(a)}>
+              {a.schema.title || a.name}
+            </Item>
+          )
         ))}
       </Menu>
     );
@@ -54,7 +59,7 @@ class AddItemMenu extends React.Component {
 }
 
 export default connect(
-  ({menu})=>({menu}),
+  ({menu, menuOpenKeys})=>({menu, menuOpenKeys}),
   (dispatch, {node}) => ({
     addNode: node2add => dispatch({
       type: 'TREE_ADD_NODE',
@@ -63,6 +68,10 @@ export default connect(
         position: 0,
         node2add,
       }
+    }),
+    menuOpenChange: keys => dispatch({
+      type: 'MENU_OPEN_KEYS_SET',
+      payload: keys
     })
   })
 )(AddItemMenu);

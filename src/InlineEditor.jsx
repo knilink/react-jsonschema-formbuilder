@@ -14,7 +14,7 @@ export default class InlineEditor extends Component {
     this.setState({value: nextProps.value})
   }
 
-  onChange = e=>{
+  onChange = e =>{
     this.setState({value:e.target.value});
   }
   onCompleteEditing = ()=>{

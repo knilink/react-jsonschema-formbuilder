@@ -1,5 +1,17 @@
 import React from 'react';
-import { Input, Select, Row, Col, Icon, Button, List, Dropdown, Menu } from 'antd';
+import {
+  Input,
+  InputNumber,
+  Select,
+  Row,
+  Col,
+  Icon,
+  Button,
+  List,
+  Dropdown,
+  Menu,
+  Switch
+} from 'antd';
 import lodash from 'lodash';
 const { TextArea } = Input;
 const { Option } = Select;
@@ -22,6 +34,7 @@ export function FormItemTemplate({title, children, remove}) {
     <List.Item.Meta title={title} description={children} />
   </List.Item>);
 }
+
 class TimeThrottle extends React.Component {
   throttle = 1000
   editing = (<Icon type="edit" />)
@@ -37,7 +50,7 @@ class TimeThrottle extends React.Component {
     if (this.state.timer) {
       clearTimeout(this.state.timer);
       this.setState({timer: null});
-      this.props.onChange(this.state.value);
+      this.onSubmitValue(this.state.value);
     }
   }
 
@@ -45,7 +58,7 @@ class TimeThrottle extends React.Component {
     if(nextProps.value!==this.state.value) {
       if (this.state.timer) {
         clearTimeout(this.state.timer);
-        this.props.onChange(this.state.value);
+        // this.props.onChange(this.state.value);
       }
       this.setState({
         value: nextProps.value,
@@ -62,9 +75,13 @@ class TimeThrottle extends React.Component {
       value: value,
       timer: setTimeout(()=>{
         this.setState({timer:null});
-        this.props.onChange(this.state.value);
+        this.onSubmitValue(this.state.value);
       }, this.throttle)
     });
+  }
+
+  onSubmitValue(value) {
+    this.props.onChange(value);
   }
 
   onBlur = () => {
@@ -74,7 +91,7 @@ class TimeThrottle extends React.Component {
     this.setState({
       timer: null
     });
-    this.props.onChange(this.state.value);
+    this.onSubmitValue(this.state.value);
   }
 
   onRemove = () => {
@@ -84,7 +101,7 @@ class TimeThrottle extends React.Component {
     this.setState({
       timer: null
     });
-    this.props.onChange(undefined);
+    this.onSubmitValue(undefined);
   }
 
   render() {
@@ -112,6 +129,82 @@ class TimeThrottleTextArea extends TimeThrottle {
       <TextArea {...rest} value={this.state.value} onChange={e=>this.onChange(e.target.value)} onBlur={this.onBlur} />
     </FormItemTemplate>;
   }
+}
+
+class TimeThrottleRange extends TimeThrottle {
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.value[0]!==this.state.value[0] ||
+       nextProps.value[1]!==this.state.value[1]
+    ) {
+      if (this.state.timer) {
+        clearTimeout(this.state.timer);
+        // this.props.onChange(this.state.value);
+      }
+      this.setState({
+        value: nextProps.value,
+        timer: null
+      });
+    }
+  }
+  onSubmitValue(value) {
+    if (!value) {
+      this.props.onChange(value);
+    }
+    let [min,max] = value;
+    if(typeof(min)==='string') {
+      if(min) {
+        min = this.props.value[0];
+      } else {
+        min = undefined;
+      }
+    }
+    if(typeof(max)==='string') {
+      if(max) {
+        max = this.props.value[1];
+      } else {
+        max = undefined;
+      }
+    }
+    this.props.onChange([min,max]);
+  }
+  render() {
+    const {
+      value: [min, max],
+      timer
+    } = this.state;
+    const {
+      title
+    } = this.props;
+    const titleElement = <span>{title}{timer?this.editing:null}</span>;
+    return (
+      <FormItemTemplate title={titleElement} remove={this.onRemove}>
+        <InputNumber
+          onChange={n=>{
+              this.onChange([
+                typeof(n)==='string' && !n ? undefined : n,
+                max
+              ]);
+          }}
+          value={min===0 && max===undefined ? '' : min }
+          style={{ width: 100, textAlign: 'center' }}
+          placeholder="Minimum"
+        />
+        <Input style={{ width: 30, borderLeft: 0, pointerEvents: 'none', backgroundColor: '#fff' }} placeholder="~" disabled />
+        <InputNumber
+          onChange={n=>{
+              this.onChange([
+                min,
+                typeof(n)==='string' && !n ? undefined : n
+              ]);
+          }}
+          value={max}
+          style={{ width: 100, textAlign: 'center', borderLeft: 0 }}
+          placeholder="Maximum"
+        />
+      </FormItemTemplate>
+    );
+  }
+
 }
 
 const widgetMap = {
@@ -170,9 +263,9 @@ const widgets = lodash(widgetMap)
   .flatMap(
     ([type, widgets])=>
       lodash(widgets)
-      .toPairs()
-      .map(([widget])=>[widget, type])
-      .value()
+        .toPairs()
+        .map(([widget])=>[widget, type])
+        .value()
   )
   .groupBy('0')
   .toPairs()
@@ -180,7 +273,7 @@ const widgets = lodash(widgetMap)
   .map(([widget, types])=>([
     (types.length>1 ?
      ({type})=>types.includes(type):
-     (t=>({type})=>type===t)(types[0])),
+              (t=>({type})=>type===t)(types[0])),
     widget
   ]))
   .map(([filter,widget])=>{
@@ -199,6 +292,25 @@ const widgets = lodash(widgetMap)
   .value();
 
 
+function type({node:{schema}, updateSchema:update}) {
+  const key = 'type';
+  const title = 'Type';
+  const availableTypes = ['string','number','integer','boolean'];
+  if(!availableTypes.includes(schema.type)) return [];
+  const value = (schema || {})[key];
+  return [
+    null,
+    (<FormItemTemplate key={key} title={title} remove={()=>update({[key]: undefined}) }>
+      <Select
+        onChange={value=>update({[key]: value})}
+        value={value}
+        style={{ width: '100%' }}
+      >
+        {availableTypes.map(key=><Option key={key}>{key}</Option>)}
+      </Select>
+    </FormItemTemplate>)
+  ];
+}
 
 function title({node:{schema}, updateSchema:update}) {
   const key='title';
@@ -397,6 +509,85 @@ function required({node:{schema},updateSchema: update}) {
 }
 
 
+const rangeMeta = (match, key, title, minp, maxp) => ({node:{schema}, updateSchema:update}) => {
+  if(!match(schema)) return [];
+  if (schema[minp] === undefined && schema[maxp] === undefined) {
+    return [(<Menu.Item key={key} onClick={()=>update({[minp]:0})}>
+      {title}
+    </Menu.Item>)];
+  }
+  return [
+    null,
+    (<TimeThrottleRange
+       key={key}
+       title={title}
+       value={[schema[minp], schema[maxp]]}
+       onChange={value => {
+           if(!value) {
+             update({[minp]:undefined, [maxp]:undefined});
+           } else {
+             const [min, max] = value;
+             update({
+               [minp]:min?min:max===undefined?0:undefined,
+               [maxp]: max
+             });
+           }
+       }}
+    />)
+  ];
+}
+const length = rangeMeta(a=>a.type==='string','length','Length','minLength', 'maxLength');
+const range = rangeMeta(a=>(a.type==='number'||a.type==='integer'),'range','Range','minimum', 'maximum');
+const itemRange = rangeMeta(a=>a.type==='array', 'itemRange','Item Range','minItems', 'maxItems');
+
+function uniqueItems({node:{schema}, updateSchema:update}) {
+  const key = 'uniqueItems';
+  const title = 'Unique Items';
+  if(schema.type!=='array') return [];
+  if (schema[key] === undefined ) {
+    return [(<Menu.Item key={key} onClick={()=>update({[key]:true})}>
+      {title}
+    </Menu.Item>)];
+  } else {
+    return [
+      null,
+      (<List.Item actions={[
+        (<Button onClick={()=>update({[key]:undefined})} size="small" type="danger" shape="circle" icon="close" />)
+      ]}>
+        <List.Item.Meta title={title} />
+        <Switch defaultChecked onChange={value=>update({[key]:value}) } />
+      </List.Item>)
+    ];
+  }
+};
+
+const [enumKey, enumName] = [['enum','Enum'],['enumNames','Enum Names']].map(
+  ([key,title]) => ({node:{schema}, updateSchema:update}) => {
+    if(schema.type !== 'string') return [];
+    if (schema[key] === undefined ) {
+      return [(<Menu.Item key={key} onClick={()=>update({[key]:[]})}>
+        {title}
+      </Menu.Item>)];
+    } else {
+      return [
+        null,
+        (<FormItemTemplate key={key} title={title} remove={()=>update({[key]: undefined})}>
+          <Select
+            mode="tags"
+            style={{ width: '100%' }}
+            onChange={values=>update({[key]:values})}
+            value={schema[key]}
+          >
+            {schema[key].map(a=>(<Select.Option key={a}>{a}</Select.Option>))}
+          </Select>
+        </FormItemTemplate>)
+      ];
+    }
+  }
+)
+
+
+
 export default class BasicEditor extends React.Component {
   static get key() {
     return 'basic-editor';
@@ -416,6 +607,7 @@ export default class BasicEditor extends React.Component {
 
   render() {
     const l = [
+      type,
       title,
       description,
       required,
@@ -423,7 +615,13 @@ export default class BasicEditor extends React.Component {
       classNames,
       help,
       placeholder,
-      pattern
+      enumKey,
+      enumName,
+      pattern,
+      length,
+      range,
+      itemRange,
+      uniqueItems,
     ].map(f=>f(this.props));
 
     const addable = l.map(a=>a[0]).filter(a=>a);

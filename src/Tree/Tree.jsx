@@ -5,7 +5,6 @@ import TreeNodeTitle from './TreeNodeTitle';
 const { TreeNode } = Tree;
 const { Search } = Input;
 
-
 class Demo extends Component {
   constructor(props) {
     super(props);

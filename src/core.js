@@ -44,11 +44,12 @@ function schema2node(path, schema, uiSchema) {
     let children = [];
     for (const i in schema.properties) {
       const nextPath = [...path, i];
-      children.push(schema2node(
+      const child = schema2node(
         nextPath,
         schema.properties[i],
         uiSchema && uiSchema[i]
-      ));
+      );
+      if(child) children.push(child);
     }
     return {
       key,
@@ -616,6 +617,8 @@ function moveNode(tree, sourceKey, targetKey, position) {
 }
 
 
+var allowedUpdatedTypes = ['string', 'number','integer', 'boolean' ];
+
 function _updateNodeByPath(tree, [head,...tail], nodeUpdate) {
   let newTree = [];
   let updated = false;
@@ -634,11 +637,30 @@ function _updateNodeByPath(tree, [head,...tail], nodeUpdate) {
       delete nu.children;
       delete nu.key;
       newNode = Object.assign(newNode, nu);
+      let typeUpdated = false;
       if(schema) {
         updated = true;
         const oldSchema = node.schema;
-        const newSchema = Object.assign({}, schema);
-        newSchema.type = oldSchema.type;
+        let newSchema = Object.assign({}, schema);
+        if(!newSchema.type) {
+          newSchema.type = oldSchema.type;
+        }
+        else {
+          if(newSchema.type !== oldSchema.type){
+            if(allowedUpdatedTypes.includes(newSchema.type) &&
+               allowedUpdatedTypes.includes(oldSchema.type)) {
+              typeUpdated=true;
+              for(const i in newSchema) {
+                if(!['type','title','description'].includes(i)) {
+                  delete newSchema[i];
+                }
+              }
+            } else {
+              return tree;
+            }
+          }
+        }
+
         if(newSchema.type === 'object') {
           newSchema.properties = oldSchema.properties;
         }
@@ -652,6 +674,7 @@ function _updateNodeByPath(tree, [head,...tail], nodeUpdate) {
         updated = true;
         const oldUiSchema = node.uiSchema;
         const newUiSchema = Object.assign({}, uiSchema);
+        if(typeUpdated) delete newUiSchema['ui:widget'];
         for(const i in node.uiSchema) {
           if(!(i.startsWith('ui:') || i==='classNames')) {
             newUiSchema[i] = oldUiSchema[i];

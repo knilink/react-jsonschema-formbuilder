@@ -6,6 +6,24 @@ const {
   updateNodeByPath,
 } = require('./core');
 describe('core functions',function () {
+  describe('schema 2 tree', function() {
+    it('proper handle undefined', () => {
+      const actual = schema2tree('root',{
+        type:'object',
+        properties: {
+          foo:{type:'string'},
+          bar:undefined,
+        }
+      });
+      const expected = schema2tree('root',{
+        type:'object',
+        properties: {
+          foo:{type:'string'},
+        }
+      });
+      expect(actual).toEqual(expected);
+    });
+  });
   describe('Remove tree node', function() {
     function r(before, after, key) {
       const treeBefore = schema2tree(
@@ -947,6 +965,67 @@ describe('core functions',function () {
         }
       };
       r(before,after,'root.foo', {name: 'bar'});
+    });
+    it('update basic type',function () {
+      const before = {
+        schema: {
+          type: 'object',
+          properties:{
+            foo:{
+              type: 'string',
+            }
+          }
+        },
+      };
+      const after = {
+        schema: {
+          type: 'object',
+          properties:{
+            foo:{
+              type: 'number',
+            }
+          }
+        }
+      };
+      r(before,after,'root.foo', {schema:{type: 'number'}});
+    });
+    it('not update object/array type', function () {
+      const d1 = {
+        schema: {
+          type: 'object',
+          properties:{
+            foo:{
+              type: 'object',
+              properties:{}
+            }
+          }
+        },
+      };
+      const d2 = {
+        schema: {
+          type: 'object',
+          properties:{
+            foo:{
+              type: 'array',
+              items:{type:'string'}
+            }
+          }
+        }
+      };
+      const d3 = {
+        schema: {
+          type: 'object',
+          properties:{
+            foo:{
+              type: 'string',
+            }
+          }
+        }
+      };
+      //r(d1,d1,'root.foo', {schema:{type: 'string'}});
+      //r(d2,d2,'root.foo', {schema:{type: 'string'}});
+      //r(d3,d3,'root.foo', {schema:{type: 'object', properties:{}}});
+      r(d3,d3,'root.foo', {schema:{type: 'array', items:{type:'string'}}});
     });
   });
 });

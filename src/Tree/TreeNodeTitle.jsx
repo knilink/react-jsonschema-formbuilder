@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Icon, Popconfirm, Button } from 'antd';
 import InlineEditor from '../InlineEditor';
-import { Popover } from 'antd';
+import { Popover, Dropdown } from 'antd';
 import AddItemMenu from './Menu';
 const ButtonGroup = Button.Group;
 
@@ -20,18 +20,18 @@ class TreeNodeTitle extends Component {
         onChange={name=>updateNodeName(key,name)}
       >
         {node.name}
-    </InlineEditor>
-    <span className="pull-right">
-    <ButtonGroup>
-    {!(isLeaf && isArray) ? <span className="form-builder-add-item-menu" onClick={e=>e.stopPropagation()}>
-      <Popover
-        placement="rightTop"
-        content={<AddItemMenu node={node} />}
-        trigger='click'
-      >
-        <Button size="small" icon="plus-circle-o"/>
-      </Popover>
-    </span> : null}
+      </InlineEditor>
+      <span className="pull-right">
+        <ButtonGroup>
+          {!(isLeaf && isArray) ? <span className="form-builder-add-item-menu" onClick={e=>e.stopPropagation()}>
+            <Popover
+              placement="rightTop"
+              content={<AddItemMenu node={node} />}
+              trigger='click'
+            >
+              <Button size="small" icon="plus-circle-o"/>
+            </Popover>
+          </span> : null}
           {!isRoot ? <span className="tree-node-delete" onClick={e=>e.stopPropagation()}>
             <Popconfirm
               placement="rightTop"
@@ -75,13 +75,13 @@ class TreeNodeTitle extends Component {
       )}
       <span className="pull-right">
         {!(isLeaf || isArray) ? <span className="form-builder-add-item-menu" onClick={e=>e.stopPropagation()}>
-          <Popover
-            placement="rightTop"
-            content={<AddItemMenu node={node} />}
-            trigger='click'
+          <Dropdown
+            placement="bottomLeft"
+            trigger={['click']}
+            overlay={<AddItemMenu node={node}/>}
           >
             <Icon type="plus-circle-o" />
-          </Popover>
+          </Dropdown>
         </span> : null}
         {!isRoot ? <span className="tree-node-delete" onClick={e=>e.stopPropagation()}>
           <Popconfirm
@@ -112,3 +112,13 @@ export default connect(
     })
   })
 )(TreeNodeTitle)
+/*
+   <Popover
+   placement="rightTop"
+   content={<AddItemMenu node={node} />}
+   trigger='click'
+   >
+   <Icon type="plus-circle-o" />
+   </Popover>
+
+ */

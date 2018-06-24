@@ -16,4 +16,4 @@ import 'antd/lib/switch/style/css';
 import 'antd/lib/table/style/css';
 import 'antd/lib/list/style/css';
 import 'antd/lib/card/style/css';
-import 'react-resizable/css/styles.css';
+import 'antd/lib/message/style/css';

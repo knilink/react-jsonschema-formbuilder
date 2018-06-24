@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import { Tabs } from 'antd';
 import JsonEditor from './JsonEditor';
 import BasicEditor from './BasicEditor';
-//import StringEditor from './StringEditor';
-import ObjectEditor from './ObjectEditor';
 
 const { getNode } = require('../core');
 const { TabPane } = Tabs;
@@ -12,7 +10,6 @@ const { TabPane } = Tabs;
 const editorList = [
   // StringEditor,
   BasicEditor,
-  ObjectEditor,
   JsonEditor
 ];
 

@@ -53,7 +53,7 @@ export default class JsonEditor extends React.Component {
   onChange = e => {
     const value = e.target.value;
     try {
-      const obj = JSON.parse(value);
+      const obj = value ? JSON.parse(value) : null;
       this.setState({
         value: obj,
         string: value,

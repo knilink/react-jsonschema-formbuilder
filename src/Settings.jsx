@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Slider, Switch, Button, List } from 'antd';
+import { Slider, Switch, Button, List, message } from 'antd';
 
 const tipFormatter = ((flag=false)=>number=>{
   flag = !flag;
@@ -92,13 +92,62 @@ class Settings extends React.Component {
       description: [
         (<Button key="edit" onClick={
           () => setTree(menu)
-        }>Customize </Button>),
+        }>Customize</Button>),
         (<Button key="set" onClick={
           () => setMenu(rootNode)
         }>Apply Change</Button>)
       ]
     }
   }
+
+  save() {
+    const {
+      settings,
+      menu,
+      setMenu,
+      updateSettings
+    } = this.props;
+    return {
+      key: 'save',
+      title: 'Save',
+      description: [
+        (<Button key="save" type="primary" onClick={
+          () => {
+            window.localStorage.setItem(
+              'react-jsonschema-formbuilder',
+              JSON.stringify({
+                settings,
+                menu:{
+                  schema:menu.schema,
+                  uiSchema:menu.uiSchema
+                }
+              })
+            )
+            message.success('Saved!');
+          }
+        }>Save</Button>),
+        (<Button key="load" onClick={
+          () => {
+            try {
+              const {settings, menu} = JSON.parse(window.localStorage.getItem('react-jsonschema-formbuilder'));
+              setMenu(menu);
+              updateSettings(settings);
+              message.success('Loaded!')
+            } catch(e) {
+              message.success('Fail to load settings!')
+            }
+          }
+        }>Load</Button>),
+        (<Button key="remove" onClick={
+          () => {
+            window.localStorage.removeItem('react-jsonschema-formbuilder');
+            message.success('Removed!')
+          }
+        }>Remove</Button>)
+      ]
+    }
+  }
+
   listItems() {
     return [
       this.siderWidth(),
@@ -106,6 +155,7 @@ class Settings extends React.Component {
       this.inlineMode(),
       this.liveValidate(),
       this.menu(),
+      this.save()
     ];
   }
 
