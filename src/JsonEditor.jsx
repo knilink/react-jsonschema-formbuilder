@@ -108,6 +108,7 @@ export default class JsonEditor extends React.Component {
         ref={ref=>this.input=ref}
         value={string}
         onChange={this.onChange}
+        autosize={false}
       />
     </div>
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Row, Button, Icon, Tooltip, message } from 'antd';
+import { Row, Button, Icon, Tooltip, message, Select } from 'antd';
 import { ActionTypes } from 'redux-undo';
 
 function write(filename, json) {
@@ -49,7 +49,7 @@ class Toolbar extends React.Component {
     }
   }
   render() {
-    const { tree, undo, redo } = this.props;
+    const { tree, undo, redo, settings, updateSettings } = this.props;
     const { past, future} = tree;
     return <Row>
       <input ref={ref => this.loadFile = ref } type="file" accept="application/json" onChange={this.open} hidden/>
@@ -65,12 +65,23 @@ class Toolbar extends React.Component {
       <Tooltip title="Redo">
         <Button style={{'marginLeft':12}} onClick={redo} disabled={!future.length}><Icon type="right" /></Button>
       </Tooltip>
+      <Select
+        mode="multiple"
+        style={{ width: 290, marginLeft: 12 }}
+        value={settings.subViews}
+        onChange={updateSettings}
+        placeholder="Select sub views..."
+      >
+        <Select.Option key="schema">Schema</Select.Option>
+        <Select.Option key="uiSchema">Ui Schema</Select.Option>
+        <Select.Option key="formData">Data</Select.Option>
+      </Select>
     </Row>;
   }
 }
 
 export default connect(
-  ({tree})=>({tree}),
+  ({tree, settings})=>({tree, settings}),
   dispatch => ({
     setTree: payload => dispatch({
       type:'TREE_SET_TREE',
@@ -78,5 +89,9 @@ export default connect(
     }),
     undo:()=>dispatch({type: ActionTypes.UNDO}),
     redo:()=>dispatch({type: ActionTypes.REDO}),
+    updateSettings: subViews => dispatch({
+      type:'SETTINGS_UPDATE',
+      payload: {subViews}
+    }),
   })
 )(Toolbar);

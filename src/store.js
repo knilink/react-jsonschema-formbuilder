@@ -45,6 +45,7 @@ const form = {
   },
   uiSchema: {
     "firstName": {
+      classNames:"",
       "ui:emptyValue": ""
     },
     "age": {

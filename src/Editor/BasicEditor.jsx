@@ -10,7 +10,8 @@ import {
   List,
   Dropdown,
   Menu,
-  Switch
+  Switch,
+  Slider
 } from 'antd';
 import lodash from 'lodash';
 const { TextArea } = Input;
@@ -358,6 +359,95 @@ function description({node:{schema}, updateSchema:update}) {
   }
 }
 
+
+class ClassNamesEditor extends TimeThrottle {
+  constructor(props) {
+    super(props);
+    const cols = this.extractCol(this.state.value);
+    this.state = {
+      ...this.state,
+      col: cols.length ? cols[0][0] : 'md',
+      value: this.state.value || ''
+    };
+  }
+
+  extractCol(classNames) {
+    return classNames.split(
+      ' '
+    ).filter(
+      a=>a.startsWith('col-')
+    ).map(
+      a=>a.split('-')
+    ).filter(
+      a=>a.length===3 && Number.isInteger(+a[2]) && ['sm','md','lg','xs'].includes(a[1])
+    ).map(([a,b,c])=>([b,+c]));
+  }
+
+  renderMenu() {
+    return (
+      <Menu onClick={({key})=>this.setState({col:key})}>
+        <Menu.Item key="sm">col-sm-</Menu.Item>
+        <Menu.Item key="md">col-md-</Menu.Item>
+        <Menu.Item key="lg">col-lg-</Menu.Item>
+        <Menu.Item key="xl">col-xl-</Menu.Item>
+      </Menu>
+    );
+  }
+  sliderValue() {
+    return (this.extractCol(this.state.value).find(a=>a[0]===this.state.col)||[0,0])[1];
+  }
+  onSliderChange = value => {
+    const {value: classNames, col, timer} = this.state;
+    if(timer) {
+      clearTimeout(timer);
+    }
+
+    let found = false;
+    let newClassNames = classNames.split(' ').map(a=>{
+      let [perfix, b, v] = a.split('-');
+      if(perfix==='col' && b===col && Number.isInteger(+v)) {
+        found = true;
+        return value?`col-${b}-${value}`:'';
+      }
+      return a;
+    }).filter(a=>a).join(' ');
+    if (!found && value) {
+      newClassNames = classNames + ' ' + `col-${col}-${value}`;
+    }
+    this.setState({value: newClassNames},()=>{
+      this.onSubmitValue(newClassNames);
+    });
+  }
+
+  render() {
+    const { title, ...rest } = this.props;
+    const {value, col} = this.state;
+    return (
+      <FormItemTemplate
+        title={<span>{title}{this.state.timer?this.editing:null}</span>}
+        remove={this.onRemove}
+      >
+        <Row type="flex" align="middle">
+          <Col xs={4}>
+            <Dropdown overlay={this.renderMenu()}>
+              <a>{this.state.col} <Icon type="down"/></a>
+            </Dropdown>
+          </Col>
+          <Col xs={20}>
+            <Slider min={0} max={12} value={this.sliderValue()} onChange={this.onSliderChange} />
+          </Col>
+        </Row>
+        <Input
+          {...rest}
+          value={value}
+          onChange={e=>this.onChange(e.target.value)}
+          onBlur={this.onBlur}
+        />
+      </FormItemTemplate>
+    );
+  }
+}
+
 function classNames({node:{uiSchema}, updateUiSchema:update}) {
   const key = 'classNames';
   const title = 'Class Names'
@@ -371,7 +461,7 @@ function classNames({node:{uiSchema}, updateUiSchema:update}) {
   } else {
     return [
       null,
-      (<TimeThrottleInput
+      (<ClassNamesEditor
          key={key}
          title={title}
          value={value}

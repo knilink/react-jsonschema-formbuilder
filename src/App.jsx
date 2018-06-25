@@ -57,15 +57,40 @@ class App extends Component {
             <Card bordered={false} style={{width: settings.formWidth, margin: '12px 8px', display: 'inline-block', verticalAlign: 'top'}}>
               <FormView />
             </Card>
-            <Card title="Schema" style={{margin: '12px 8px', width: 400, display: 'inline-block', verticalAlign: 'top'}}>
-              <SchemaView />
-            </Card>
-            <Card title="Ui Schema" style={{margin: '12px 8px', width: 400, display: 'inline-block', verticalAlign: 'top'}}>
-              <UiSchemaView />
-            </Card>
-            <Card title="Form Data" style={{margin: '12px 8px', width: 400, display: 'inline-block', verticalAlign: 'top'}}>
-              <FormDataView />
-            </Card>
+            {(settings.subViews||[]).map(a=>{
+               const style = {margin: '12px 8px', width: 400, display: 'inline-block', verticalAlign: 'top'};
+               switch(a){
+                 case 'schema':
+                   return (
+                     <Card
+                       key="schema"
+                       title="Schema"
+                       style={style}>
+                       <SchemaView />
+                     </Card>
+                   );
+                 case 'uiSchema':
+                   return (
+                     <Card
+                       key="uiSchema"
+                       title="Ui Schema"
+                       style={style}>
+                       <UiSchemaView />
+                     </Card>
+                   );
+                 case 'formData':
+                   return (
+                     <Card
+                       key="formData"
+                       title="Form Data"
+                       style={style}>
+                       <FormDataView />
+                     </Card>
+                   )
+                 default:
+                   return (<div key="null" />)
+               }
+            })}
           </Content>
         </Layout>
         <Sider width={this.props.activeNodeKey?settings.rightSiderWidth:0} style={{
