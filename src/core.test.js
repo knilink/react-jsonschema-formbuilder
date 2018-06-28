@@ -7,7 +7,7 @@ const {
 } = require('./core');
 describe('core functions',function () {
   describe('schema 2 tree', function() {
-    it('proper handle undefined', () => {
+    it('properly handle undefined', () => {
       const actual = schema2tree('root',{
         type:'object',
         properties: {
@@ -1022,9 +1022,9 @@ describe('core functions',function () {
           }
         }
       };
-      //r(d1,d1,'root.foo', {schema:{type: 'string'}});
-      //r(d2,d2,'root.foo', {schema:{type: 'string'}});
-      //r(d3,d3,'root.foo', {schema:{type: 'object', properties:{}}});
+      r(d1,d1,'root.foo', {schema:{type: 'string'}});
+      r(d2,d2,'root.foo', {schema:{type: 'string'}});
+      r(d3,d3,'root.foo', {schema:{type: 'object', properties:{}}});
       r(d3,d3,'root.foo', {schema:{type: 'array', items:{type:'string'}}});
     });
   });

@@ -359,72 +359,84 @@ function description({node:{schema}, updateSchema:update}) {
   }
 }
 
+class ClassNamesEditor extends React.Component {
+  colSizes = ['sm','md','lg','xl'];
+  style = { width: '100%' };
 
-class ClassNamesEditor extends TimeThrottle {
   constructor(props) {
     super(props);
-    const cols = this.extractCol(this.state.value);
+    const value = [...(new Set(
+      this.props.value.split(' ').filter(a=>a)
+    ))];
+
+    const cols = this.extractCol(value);
     this.state = {
-      ...this.state,
       col: cols.length ? cols[0][0] : 'md',
-      value: this.state.value || ''
+      value: value,
+      options: value
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.value !== this.props.value) {
+      const value = nextProps.value.split(' ').filter(a=>a);
+      const {options} = this.state;
+      const newOptions = value.filter(a=>!options.includes(a));
+      this.setState({
+        value,
+        options: newOptions //[...options, ...newOptions]
+      });
+    }
+  }
+
   extractCol(classNames) {
-    return classNames.split(
-      ' '
-    ).filter(
+    return classNames.filter(
       a=>a.startsWith('col-')
     ).map(
       a=>a.split('-')
     ).filter(
-      a=>a.length===3 && Number.isInteger(+a[2]) && ['sm','md','lg','xs'].includes(a[1])
+      a=>a.length===3 && Number.isInteger(+a[2]) && this.colSizes.includes(a[1])
     ).map(([a,b,c])=>([b,+c]));
   }
 
   renderMenu() {
     return (
       <Menu onClick={({key})=>this.setState({col:key})}>
-        <Menu.Item key="sm">col-sm-</Menu.Item>
-        <Menu.Item key="md">col-md-</Menu.Item>
-        <Menu.Item key="lg">col-lg-</Menu.Item>
-        <Menu.Item key="xl">col-xl-</Menu.Item>
+        {this.colSizes.map(a=>(<Menu.Item key={a}>col-{a}-</Menu.Item>))}
       </Menu>
     );
   }
+
   sliderValue() {
-    return (this.extractCol(this.state.value).find(a=>a[0]===this.state.col)||[0,0])[1];
+    const { value, col } = this.state;
+    console.log(this.state);
+    return (this.extractCol(value).find(a=>a[0]===col)||[0,0])[1];
   }
+
   onSliderChange = value => {
-    const {value: classNames, col, timer} = this.state;
-    if(timer) {
-      clearTimeout(timer);
-    }
+    const { value: classNames, col } = this.state;
 
     let found = false;
-    let newClassNames = classNames.split(' ').map(a=>{
+    let newClassNames = classNames.map(a=>{
       let [perfix, b, v] = a.split('-');
       if(perfix==='col' && b===col && Number.isInteger(+v)) {
         found = true;
         return value?`col-${b}-${value}`:'';
       }
       return a;
-    }).filter(a=>a).join(' ');
+    }).filter(a=>a);
     if (!found && value) {
-      newClassNames = classNames + ' ' + `col-${col}-${value}`;
+      newClassNames.push(`col-${col}-${value}`);
     }
-    this.setState({value: newClassNames},()=>{
-      this.onSubmitValue(newClassNames);
-    });
+    this.props.onChange(newClassNames.join(' '));
   }
 
   render() {
     const { title, ...rest } = this.props;
-    const {value, col} = this.state;
+    const {options, value, col} = this.state;
     return (
       <FormItemTemplate
-        title={<span>{title}{this.state.timer?this.editing:null}</span>}
+        title={title}
         remove={this.onRemove}
       >
         <Row type="flex" align="middle">
@@ -437,12 +449,17 @@ class ClassNamesEditor extends TimeThrottle {
             <Slider min={0} max={12} value={this.sliderValue()} onChange={this.onSliderChange} />
           </Col>
         </Row>
-        <Input
+        <Select
+          style={this.style}
+          mode="tags"
+          tokenSeparators={[' ']}
           {...rest}
           value={value}
-          onChange={e=>this.onChange(e.target.value)}
+          onChange={value => this.props.onChange(value.join(' '))}
           onBlur={this.onBlur}
-        />
+        >
+          {options.map(a=>(<Option key={a}>{a}</Option>))}
+        </Select>
       </FormItemTemplate>
     );
   }
