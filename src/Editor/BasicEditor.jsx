@@ -218,10 +218,10 @@ const widgetMap = {
   string: {
     text: "TextWidget",
     password: "PasswordWidget",
-    email: "EmailWidget",
-    hostname: "TextWidget",
-    ipv4: "TextWidget",
-    ipv6: "TextWidget",
+    // email: "EmailWidget",
+    // hostname: "TextWidget",
+    // ipv4: "TextWidget",
+    // ipv6: "TextWidget",
     uri: "URLWidget",
     "data-url": "FileWidget",
     radio: "RadioWidget",
@@ -230,7 +230,7 @@ const widgetMap = {
     hidden: "HiddenWidget",
     date: "DateWidget",
     datetime: "DateTimeWidget",
-    "date-time": "DateTimeWidget",
+    //"date-time": "DateTimeWidget",
     "alt-date": "AltDateWidget",
     "alt-datetime": "AltDateTimeWidget",
     color: "ColorWidget",
@@ -437,12 +437,12 @@ class ClassNamesEditor extends React.Component {
     return (
       <FormItemTemplate
         title={title}
-        remove={this.onRemove}
+        remove={()=>this.props.onChange(undefined)}
       >
         <Row type="flex" align="middle">
           <Col xs={4}>
             <Dropdown overlay={this.renderMenu()}>
-              <a>{this.state.col} <Icon type="down"/></a>
+              <a>{col} <Icon type="down"/></a>
             </Dropdown>
           </Col>
           <Col xs={20}>
@@ -693,6 +693,31 @@ const [enumKey, enumName] = [['enum','Enum'],['enumNames','Enum Names']].map(
   }
 )
 
+const formatOptions = ['date-time','email','hostname','ipv4','ipv6','uri'];
+function format({node:{schema}, updateSchema:update}) {
+  const key = 'format';
+  const title = 'Format';
+  if(schema.type!=='string') return [];
+  if (schema[key] === undefined) {
+    return [(<Menu.Item key={key} onClick={()=>update({[key]:[]})}>
+      {title}
+    </Menu.Item>)];
+  } else {
+    return [
+      null,
+      (<FormItemTemplate key={key} title={title} remove={()=>update({[key]: undefined})}>
+        <Select
+          style={{ width: '100%' }}
+          onChange={value=>update({[key]:value})}
+          value={schema[key]}
+        >
+          {formatOptions.map(a=>(<Option key={a}>{a}</Option>))}
+        </Select>
+      </FormItemTemplate>)
+    ];
+  }
+
+}
 
 
 export default class BasicEditor extends React.Component {
@@ -729,6 +754,7 @@ export default class BasicEditor extends React.Component {
       range,
       itemRange,
       uniqueItems,
+      format
     ].map(f=>f(this.props));
 
     const addable = l.map(a=>a[0]).filter(a=>a);

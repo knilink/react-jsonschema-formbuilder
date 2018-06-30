@@ -1027,5 +1027,16 @@ describe('core functions',function () {
       r(d3,d3,'root.foo', {schema:{type: 'object', properties:{}}});
       r(d3,d3,'root.foo', {schema:{type: 'array', items:{type:'string'}}});
     });
+    it('not break uiSchema structure', function () {
+      const data = {
+        schema: {
+          type:'object',
+          properties: {
+            foo: {type:'string'}
+          }
+        },
+      };
+      r(data,data,'root', {uiSchema:{foo:{'ui:widget':'text'}}});
+    });
   });
 });

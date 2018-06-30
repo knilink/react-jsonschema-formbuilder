@@ -673,7 +673,12 @@ function _updateNodeByPath(tree, [head,...tail], nodeUpdate) {
       if(uiSchema) {
         updated = true;
         const oldUiSchema = node.uiSchema;
-        const newUiSchema = Object.assign({}, uiSchema);
+        const newUiSchema = {};
+        for(const i in uiSchema){
+          if(i.startsWith('ui:') || i==='classNames') {
+            newUiSchema[i] = uiSchema[i];
+          }
+        }
         if(typeUpdated) delete newUiSchema['ui:widget'];
         for(const i in node.uiSchema) {
           if(!(i.startsWith('ui:') || i==='classNames')) {
