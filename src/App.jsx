@@ -35,6 +35,7 @@ class App extends Component {
             background: '#fff',
             padding: 0,
             overflow: 'auto',
+            boxShadow: '0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 2px 3px 0 rgba(0, 0, 0, 0.2)',
             height: '100vh',
             position: 'fixed',
             left: 0,
