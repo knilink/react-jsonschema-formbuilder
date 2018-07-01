@@ -29,7 +29,7 @@ function read(e) {
   return p;
 }
 
-
+const buttonStyle = {'marginLeft': 8};
 class Toolbar extends React.Component {
   constructor(props) {
     super(props);
@@ -49,21 +49,24 @@ class Toolbar extends React.Component {
     }
   }
   render() {
-    const { tree, undo, redo, settings, updateSettings } = this.props;
+    const { tree, undo, redo, settings, updateSettings, newForm } = this.props;
     const { past, future} = tree;
     return <Row>
       <input ref={ref => this.loadFile = ref } type="file" accept="application/json" onChange={this.open} hidden/>
+      <Tooltip title="New">
+        <Button style={buttonStyle} onClick={newForm} icon="file-add" />
+      </Tooltip>
       <Tooltip title="Open">
-        <Button style={{'marginLeft':12}} onClick={()=>this.loadFile && this.loadFile.click() }><Icon type="folder-open" /></Button>
+        <Button style={buttonStyle} onClick={()=>this.loadFile && this.loadFile.click() } icon="folder-open" />
       </Tooltip>
       <Tooltip title="Save">
-        <Button style={{'marginLeft':12}} onClick={this.save}><Icon type="save" /></Button>
+        <Button style={buttonStyle} onClick={this.save} icon="save" />
       </Tooltip>
       <Tooltip title="Undo">
-        <Button style={{'marginLeft':12}} onClick={undo} disabled={!past.length}><Icon type="left" /></Button>
+        <Button style={buttonStyle} onClick={undo} disabled={!past.length} icon="left" />
       </Tooltip>
       <Tooltip title="Redo">
-        <Button style={{'marginLeft':12}} onClick={redo} disabled={!future.length}><Icon type="right" /></Button>
+        <Button style={buttonStyle} onClick={redo} disabled={!future.length} icon="right" />
       </Tooltip>
       <Select
         mode="multiple"
@@ -83,6 +86,9 @@ class Toolbar extends React.Component {
 export default connect(
   ({tree, settings})=>({tree, settings}),
   dispatch => ({
+    newForm: () => dispatch({
+      type: 'TREE_CLEAR'
+    }),
     setTree: payload => dispatch({
       type:'TREE_SET_TREE',
       payload

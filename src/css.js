@@ -17,3 +17,4 @@ import 'antd/lib/table/style/css';
 import 'antd/lib/list/style/css';
 import 'antd/lib/card/style/css';
 import 'antd/lib/message/style/css';
+import 'antd/lib/modal/style/css';

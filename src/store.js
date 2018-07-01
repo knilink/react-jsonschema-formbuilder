@@ -1,10 +1,20 @@
 var { createStore } = require('redux');
 var reducer = require('./reducers');
+var { persistStore, persistReducer } = require('redux-persist');
+var storage = require('redux-persist/lib/storage').default;
+var hardSet = require('redux-persist/lib/stateReconciler/hardSet').default;
+var persistConfig = {
+  key: 'react-jsonschema-formbuilder',
+  storage,
+  stateReconciler: hardSet,
+  throttle: 15
+};
+
 var {
   schema2tree,
 } = require('./core');
 
-const form = {
+var form = {
   schema: {
     "title": "A registration form",
     "description": "A simple form example.",
@@ -77,10 +87,20 @@ var initTree = schema2tree(
   form.uiSchema
 );
 
-var store = createStore(reducer, {
+var persistedReducer = persistReducer(persistConfig, reducer);
+
+var store = createStore(persistedReducer, {
   tree:{
     present:initTree
   }
 });
+/*
+  , {
+  tree:{
+  present:initTree
+  }
+  }
+*/
+var persistor = persistStore(store);
 
-module.exports = store;
+module.exports = { store, persistor };

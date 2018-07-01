@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Provider, connect } from 'react-redux';
-import store from './store';
-//import logo from './logo.svg';
-//import './App.css';
+import { store, persistor } from './store';
+import { PersistGate } from 'redux-persist/integration/react'
 import './css';
 import { Layout, Tabs, Card } from 'antd';
 import Tree from './Tree';
@@ -117,8 +116,10 @@ const AppContainer = connect(({
   settings
 }))(App);
 export default ()=>(<Provider store={store}>
-  <AppContainer />
-</Provider>)
+  <PersistGate loading={null} persistor={persistor}>
+    <AppContainer />
+  </PersistGate>
+</Provider>);
 /*
    <Icon
    className="trigger"

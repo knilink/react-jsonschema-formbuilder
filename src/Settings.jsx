@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Slider, Switch, Button, List, message } from 'antd';
+import { Slider, Switch, Button, List, message, Modal } from 'antd';
+const { confirm } = Modal;
 
 const tipFormatter = ((flag=false)=>number=>{
   flag = !flag;
@@ -100,51 +101,27 @@ class Settings extends React.Component {
     }
   }
 
-  save() {
-    const {
-      settings,
-      menu,
-      setMenu,
-      updateSettings
-    } = this.props;
+  reset() {
     return {
-      key: 'save',
-      title: 'Save',
-      description: [
-        (<Button key="save" type="primary" onClick={
+      key: 'reset',
+      description: (
+        <Button type="danger" sytle={{width:'100%'}} key="edit" onClick={
           () => {
-            window.localStorage.setItem(
-              'react-jsonschema-formbuilder',
-              JSON.stringify({
-                settings,
-                menu:{
-                  schema:menu.schema,
-                  uiSchema:menu.uiSchema
-                }
-              })
-            )
-            message.success('Saved!');
+            confirm({
+              title: 'Reset Form Buiilder?',
+              content: 'Removing persistent data from local storage.\n All settings and unsaved form will be lost.',
+              okText: 'Continue',
+              okType: 'danger',
+              closable: true,
+              maskClosable: true,
+              onOk() {
+                window.localStorage.removeItem('persist:react-jsonschema-formbuilder');
+                window.location.reload();
+              },
+            });
           }
-        }>Save</Button>),
-        (<Button key="load" onClick={
-          () => {
-            try {
-              const {settings, menu} = JSON.parse(window.localStorage.getItem('react-jsonschema-formbuilder'));
-              setMenu(menu);
-              updateSettings(settings);
-              message.success('Loaded!')
-            } catch(e) {
-              message.success('Fail to load settings!')
-            }
-          }
-        }>Load</Button>),
-        (<Button key="remove" onClick={
-          () => {
-            window.localStorage.removeItem('react-jsonschema-formbuilder');
-            message.success('Removed!')
-          }
-        }>Remove</Button>)
-      ]
+        }>Reset Form Builder</Button>
+      )
     }
   }
 
@@ -155,7 +132,7 @@ class Settings extends React.Component {
       this.inlineMode(),
       this.liveValidate(),
       this.menu(),
-      this.save()
+      this.reset(),
     ];
   }
 
