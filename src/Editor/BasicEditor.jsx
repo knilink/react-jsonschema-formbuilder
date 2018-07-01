@@ -409,7 +409,6 @@ class ClassNamesEditor extends React.Component {
 
   sliderValue() {
     const { value, col } = this.state;
-    console.log(this.state);
     return (this.extractCol(value).find(a=>a[0]===col)||[0,0])[1];
   }
 

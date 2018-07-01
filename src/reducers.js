@@ -128,8 +128,16 @@ function menuOpenKeys(state=[], action) {
 }
 
 
+function removeUnnecessaryHistory(reducer) {
+  return (state, action) => {
+    let newState = reducer(state, action);
+    delete newState.history;
+    return newState;
+  };
+}
+
 var reducer = combineReducers({
-  tree: undoable(tree,{
+  tree: removeUnnecessaryHistory(undoable(tree,{
     filter: includeAction([
       'TREE_UPDATE_NODE',
       'TREE_SET_TREE',
@@ -138,7 +146,7 @@ var reducer = combineReducers({
       'TREE_REMOVE_NODE',
       'TREE_MOVE_NODE'
     ]),
-  }),
+  })),
   activeNodeKey,
   settings,
   menu,
@@ -147,6 +155,7 @@ var reducer = combineReducers({
 });
 
 module.exports = function (state, action) {
+  console.log(state, action);
   switch(action.type) {
   case 'TREE_REMOVE_NODE_BY_RJSF_ID': {
     const target = getNodeByRjsfId(state.tree.present, action.payload);
