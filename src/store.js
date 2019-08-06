@@ -91,7 +91,9 @@ var persistedReducer = persistReducer(persistConfig, reducer);
 
 var store = createStore(persistedReducer, {
   tree:{
-    present:initTree
+    past: [],
+    present:initTree,
+    future: [],
   }
 });
 /*
