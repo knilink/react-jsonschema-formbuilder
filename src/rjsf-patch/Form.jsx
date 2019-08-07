@@ -1,7 +1,5 @@
-import Form from 'react-jsonschema-form/lib'
-import {
-  getDefaultRegistry
-} from './utils';
+import Form from 'react-jsonschema-form/lib';
+import { getDefaultRegistry } from './utils';
 
 export default class FormPatch extends Form {
   getRegistry() {

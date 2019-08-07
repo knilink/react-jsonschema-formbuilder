@@ -1,21 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Form from "../rjsf-patch/Form";
-import {FieldTemplate, ObjectFieldTemplate} from '../Template';
+import Form from '../rjsf-patch/Form';
+import { FieldTemplate, ObjectFieldTemplate } from '../Template';
 
 class FormView extends React.Component {
   render() {
-    if(!this.props.schema) {
+    if (!this.props.schema) {
       return null;
     }
-    const {
-      name,
-      schema,
-      uiSchema,
-      formData,
-      setFormData,
-      liveValidate
-    } = this.props;
+    const { name, schema, uiSchema, formData, setFormData, liveValidate } = this.props;
     return (
       <Form
         schema={schema}
@@ -31,21 +24,25 @@ class FormView extends React.Component {
   }
 }
 
-export default connect(({
-  tree:{present:[{name, schema, uiSchema}]},
-  formData,
-  settings:{isLiveValidate},
-})=>({
-  name,
-  schema,
-  uiSchema,
-  formData,
-  liveValidate: isLiveValidate
-}),
-  dispatch => ({
-    setFormData: ({formData}) => dispatch({
-      type:'FORM_DATA_SET',
-      payload: formData
-    })
+export default connect(
+  ({
+    tree: {
+      present: [{ name, schema, uiSchema }],
+    },
+    formData,
+    settings: { isLiveValidate },
+  }) => ({
+    name,
+    schema,
+    uiSchema,
+    formData,
+    liveValidate: isLiveValidate,
+  }),
+  (dispatch) => ({
+    setFormData: ({ formData }) =>
+      dispatch({
+        type: 'FORM_DATA_SET',
+        payload: formData,
+      }),
   })
 )(FormView);

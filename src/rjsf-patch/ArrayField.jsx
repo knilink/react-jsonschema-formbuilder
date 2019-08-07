@@ -1,13 +1,7 @@
 import React from 'react';
 import ArrayField from 'react-jsonschema-form/lib/components/fields/ArrayField';
 
-import {
-  getWidget,
-  getUiOptions,
-  optionsList,
-  retrieveSchema,
-  getDefaultRegistry,
-} from "./utils";
+import { getWidget, getUiOptions, optionsList, retrieveSchema, getDefaultRegistry } from './utils';
 
 class ArrayFieldPatched extends ArrayField {
   renderMultiSelect() {
@@ -28,7 +22,7 @@ class ArrayFieldPatched extends ArrayField {
     const { widgets, definitions, formContext } = registry;
     const itemsSchema = retrieveSchema(schema.items, definitions, formData);
     const enumOptions = optionsList(itemsSchema);
-    const { widget = "select", ...options } = {
+    const { widget = 'select', ...options } = {
       ...getUiOptions(uiSchema),
       enumOptions,
     };

@@ -17,18 +17,7 @@ function Label(props) {
 }
 
 export function DefaultTemplate(props) {
-  const {
-    id,
-    classNames,
-    label,
-    children,
-    errors,
-    help,
-    description,
-    hidden,
-    required,
-    displayLabel,
-  } = props;
+  const { id, classNames, label, children, errors, help, description, hidden, required, displayLabel } = props;
   if (hidden) {
     return children;
   }
@@ -48,22 +37,22 @@ export function DefaultObjectFieldTemplate(props) {
   const { TitleField, DescriptionField } = props;
   return (
     <fieldset>
-      {(props.uiSchema["ui:title"] || props.title) && (
-         <TitleField
-           id={`${props.idSchema.$id}__title`}
-           title={props.title || props.uiSchema["ui:title"]}
-           required={props.required}
-           formContext={props.formContext}
-         />
+      {(props.uiSchema['ui:title'] || props.title) && (
+        <TitleField
+          id={`${props.idSchema.$id}__title`}
+          title={props.title || props.uiSchema['ui:title']}
+          required={props.required}
+          formContext={props.formContext}
+        />
       )}
       {props.description && (
-         <DescriptionField
-           id={`${props.idSchema.$id}__description`}
-           description={props.description}
-           formContext={props.formContext}
-         />
+        <DescriptionField
+          id={`${props.idSchema.$id}__description`}
+          description={props.description}
+          formContext={props.formContext}
+        />
       )}
-      {props.properties.map(prop => prop.content)}
+      {props.properties.map((prop) => prop.content)}
     </fieldset>
   );
 }

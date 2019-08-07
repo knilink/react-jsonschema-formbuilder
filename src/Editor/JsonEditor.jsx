@@ -15,12 +15,12 @@ export default class NodeJsonEditor extends React.Component {
 
   constructor(props) {
     super(props);
-    const {schema, uiSchema} = props;
+    const { schema, uiSchema } = props;
     this.state = {
-      schemaJsonString:JSON.stringify(schema,null,2),
-      uiSchemaJsonString:JSON.stringify(schema,null,2),
+      schemaJsonString: JSON.stringify(schema, null, 2),
+      uiSchemaJsonString: JSON.stringify(schema, null, 2),
       schema,
-      uiSchema
+      uiSchema,
     };
   }
 
@@ -28,10 +28,12 @@ export default class NodeJsonEditor extends React.Component {
     const { node, updateNode } = this.props;
     const { schema, uiSchema } = node;
     const { properties, items, additionalItems, ...rschema } = schema;
-    return <div>
-      <Input value={node.name} onChange={e => updateNode({name:e.target.value})} />
-      <JsonEditor value={rschema} onChange={schema=>updateNode({schema}) } autosize/>
-      <JsonEditor value={uiSchema} onChange={uiSchema=>updateNode({uiSchema}) } autosize/>
-    </div>;
+    return (
+      <div>
+        <Input value={node.name} onChange={(e) => updateNode({ name: e.target.value })} />
+        <JsonEditor value={rschema} onChange={(schema) => updateNode({ schema })} autosize />
+        <JsonEditor value={uiSchema} onChange={(uiSchema) => updateNode({ uiSchema })} autosize />
+      </div>
+    );
   }
 }

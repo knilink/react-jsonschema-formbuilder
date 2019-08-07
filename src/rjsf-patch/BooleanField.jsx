@@ -1,12 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import {
-  getWidget,
-  getUiOptions,
-  optionsList,
-  getDefaultRegistry,
-} from "./utils";
+import { getWidget, getUiOptions, optionsList, getDefaultRegistry } from './utils';
 
 function BooleanField(props) {
   const {
@@ -25,11 +20,11 @@ function BooleanField(props) {
   } = props;
   const { title } = schema;
   const { widgets, formContext } = registry;
-  const { widget = "checkbox", ...options } = getUiOptions(uiSchema);
+  const { widget = 'checkbox', ...options } = getUiOptions(uiSchema);
   const Widget = getWidget(schema, widget, widgets);
   const enumOptions = optionsList({
     enum: [true, false],
-    enumNames: schema.enumNames || ["yes", "no"],
+    enumNames: schema.enumNames || ['yes', 'no'],
   });
   return (
     <Widget
@@ -50,7 +45,7 @@ function BooleanField(props) {
   );
 }
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== 'production') {
   BooleanField.propTypes = {
     schema: PropTypes.object.isRequired,
     uiSchema: PropTypes.object,
@@ -62,9 +57,7 @@ if (process.env.NODE_ENV !== "production") {
     readonly: PropTypes.bool,
     autofocus: PropTypes.bool,
     registry: PropTypes.shape({
-      widgets: PropTypes.objectOf(
-        PropTypes.oneOfType([PropTypes.func, PropTypes.object])
-      ).isRequired,
+      widgets: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object])).isRequired,
       fields: PropTypes.objectOf(PropTypes.func).isRequired,
       definitions: PropTypes.object.isRequired,
       formContext: PropTypes.object.isRequired,

@@ -3,5 +3,5 @@ module.exports = {
   rightSiderWidth: 360,
   formWidth: 600,
   isInlineMode: true,
-  subViews: ['schema', 'uiSchema', 'formData']
+  subViews: ['schema', 'uiSchema', 'formData'],
 };

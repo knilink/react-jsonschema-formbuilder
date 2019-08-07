@@ -5,21 +5,20 @@ body {
 }
 
 .form-builder-draggable-tree .ant-tree-node-content-wrapper {
-    width: calc(100% - 18px);
+  width: calc(100% - 18px);
 }
 
 .tree-node-delete:hover {
-    color: #f04134;
-    transition: .2s;
+  color: #f04134;
+  transition: 0.2s;
 }
 
-
 .fb-test:hover {
-    text-decoration: underline;
-    cursor: pointer;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 /* fix bootstrap label blocking the template buttons */
 .checkbox {
-    position: inherit
+  position: inherit;
 }

@@ -7,94 +7,83 @@ var persistConfig = {
   key: 'react-jsonschema-formbuilder',
   storage,
   stateReconciler: hardSet,
-  throttle: 15
+  throttle: 15,
 };
 
-var {
-  schema2tree,
-} = require('./core');
+var { schema2tree } = require('./core');
 
 var form = {
   schema: {
-    "title": "A registration form",
-    "description": "A simple form example.",
-    "type": "object",
-    "required": [
-      "firstName",
-      "lastName"
-    ],
-    "properties": {
-      "firstName": {
-        "type": "string",
-        "title": "First name"
+    title: 'A registration form',
+    description: 'A simple form example.',
+    type: 'object',
+    required: ['firstName', 'lastName'],
+    properties: {
+      firstName: {
+        type: 'string',
+        title: 'First name',
       },
-      "lastName": {
-        "type": "string",
-        "title": "Last name"
+      lastName: {
+        type: 'string',
+        title: 'Last name',
       },
-      "age": {
-        "type": "integer",
-        "title": "Age",
-        "description": "(earthian year)"
+      age: {
+        type: 'integer',
+        title: 'Age',
+        description: '(earthian year)',
       },
-      "bio": {
-        "type": "string",
-        "title": "Bio"
+      bio: {
+        type: 'string',
+        title: 'Bio',
       },
-      "password": {
-        "type": "string",
-        "title": "Password",
-        "minLength": 3
+      password: {
+        type: 'string',
+        title: 'Password',
+        minLength: 3,
       },
-      "telephone": {
-        "type": "string",
-        "title": "Telephone",
-        "minLength": 10
-      }
-    }
+      telephone: {
+        type: 'string',
+        title: 'Telephone',
+        minLength: 10,
+      },
+    },
   },
   uiSchema: {
-    "firstName": {
-      classNames:"",
-      "ui:emptyValue": ""
+    firstName: {
+      classNames: '',
+      'ui:emptyValue': '',
     },
-    "age": {
-      "ui:widget": "updown"
+    age: {
+      'ui:widget': 'updown',
     },
-    "bio": {
-      "ui:widget": "textarea"
+    bio: {
+      'ui:widget': 'textarea',
     },
-    "password": {
-      "ui:widget": "password",
-      "ui:help": "Hint: Make it strong!"
+    password: {
+      'ui:widget': 'password',
+      'ui:help': 'Hint: Make it strong!',
     },
-    "date": {
-      "ui:widget": "alt-datetime"
+    date: {
+      'ui:widget': 'alt-datetime',
     },
-    "telephone": {
-      "ui:options": {
-        "inputType": "tel"
-      }
-    }
-  }
+    telephone: {
+      'ui:options': {
+        inputType: 'tel',
+      },
+    },
+  },
 };
 
-
-
-var initTree = schema2tree(
-  'root',
-  form.schema,
-  form.uiSchema
-);
+var initTree = schema2tree('root', form.schema, form.uiSchema);
 
 var persistedReducer = persistReducer(persistConfig, reducer);
 
 var store = createStore(persistedReducer, {
-  tree:{
+  tree: {
     past: [],
-    present:initTree,
+    present: initTree,
     future: [],
-  }
+  },
 });
 /*
   , {
