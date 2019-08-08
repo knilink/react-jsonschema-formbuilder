@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Slider, Switch, Button, List, message, Modal } from 'antd';
+import { Slider, Switch, Button, List, Modal } from 'antd';
 const { confirm } = Modal;
 
 const tipFormatter = ((flag = false) => (number) => {

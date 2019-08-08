@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Row, Button, Icon, Tooltip, message, Select } from 'antd';
+import { Row, Button, Tooltip, message, Select } from 'antd';
 import { ActionTypes } from 'redux-undo';
 
 function write(filename, json) {

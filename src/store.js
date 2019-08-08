@@ -1,8 +1,8 @@
-var { createStore } = require('redux');
-var reducer = require('./reducers');
-var { persistStore, persistReducer } = require('redux-persist');
-var storage = require('redux-persist/lib/storage').default;
-var hardSet = require('redux-persist/lib/stateReconciler/hardSet').default;
+import { createStore } from 'redux';
+import reducer from './reducers';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import hardSet from 'redux-persist/lib/stateReconciler/hardSet';
 var persistConfig = {
   key: 'react-jsonschema-formbuilder',
   storage,
@@ -85,13 +85,8 @@ var store = createStore(persistedReducer, {
     future: [],
   },
 });
-/*
-  , {
-  tree:{
-  present:initTree
-  }
-  }
-*/
+
 var persistor = persistStore(store);
 
-module.exports = { store, persistor };
+export { store, persistor };
+export default { store, persistor };

@@ -6,8 +6,6 @@ const { getNodeByRjsfId } = require('../core');
 const { TextArea } = Input;
 
 const ACTIVE_STYLE = { backgroundColor: '#bae7ff' };
-//const ACTIVE_STYLE = {boxShadow:'0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)'};
-//const ACTIVE_STYLE = {boxShadow:'0 0 0 1000px rgba(0,0,0,0.16)','zIndex':-1};
 
 class ExtendedInlineEditor extends InlineEditor {
   renderView() {

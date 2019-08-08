@@ -1,14 +1,14 @@
-var { schema2tree, schema2node, removeNode, addNode, moveNode, updateNode, getNodeByRjsfId } = require('./core');
-var defaultSettings = require('./default/settings');
-var defaultMenuSchema = require('./default/menu');
-var defaultMenu = schema2node(['menu'], defaultMenuSchema.schema, defaultMenuSchema.uiSchema);
-var undoable = require('redux-undo').default;
-var { includeAction } = require('redux-undo');
-var { combineReducers } = require('redux');
+import { schema2tree, schema2node, removeNode, addNode, moveNode, updateNode, getNodeByRjsfId } from './core';
+import defaultSettings from './default/settings';
+import defaultMenuSchema from './default/menu';
+import undoable from 'redux-undo';
+import { includeAction } from 'redux-undo';
+import { combineReducers } from 'redux';
 
-var DEFAULT_TREE_NAME = 'root';
+const defaultMenu = schema2node(['menu'], defaultMenuSchema.schema, defaultMenuSchema.uiSchema);
+const DEFAULT_TREE_NAME = 'root';
 
-var emptyTree = schema2tree(DEFAULT_TREE_NAME, { type: 'object', properties: {} });
+const emptyTree = schema2tree(DEFAULT_TREE_NAME, { type: 'object', properties: {} });
 
 function tree(state = emptyTree, action) {
   switch (action.type) {
@@ -133,7 +133,7 @@ var reducer = combineReducers({
   menuOpenKeys,
 });
 
-module.exports = function(state, action) {
+export default function(state, action) {
   console.log(state, action);
   switch (action.type) {
     case 'TREE_REMOVE_NODE_BY_RJSF_ID': {
@@ -160,7 +160,7 @@ module.exports = function(state, action) {
       if (!target) return state;
       action = {
         type: 'TREE_UPDATE_NODE',
-        payload: Object.assign({}, action.payload, { target: target.key }),
+        payload: { ...action.payload, target: target.key },
       };
       break;
     }
@@ -168,4 +168,4 @@ module.exports = function(state, action) {
       break;
   }
   return reducer(state, action);
-};
+}

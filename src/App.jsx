@@ -116,13 +116,3 @@ export default () => (
     </PersistGate>
   </Provider>
 );
-/*
-   <Icon
-   className="trigger"
-   type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
-   onClick={this.toggle}
-   />
- */
-/*
-   <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280, width:settings.formWidth }}>
- */

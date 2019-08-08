@@ -1,50 +1,11 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { Icon, Popconfirm, Button } from 'antd';
+import { Icon, Popconfirm } from 'antd';
 import InlineEditor from '../InlineEditor';
-import { Popover, Dropdown } from 'antd';
+import { Dropdown } from 'antd';
 import AddItemMenu from './Menu';
-const ButtonGroup = Button.Group;
 
-class TreeNodeTitle extends Component {
-  _render() {
-    const { node, removeNode, updateNodeName } = this.props;
-    const { key } = node;
-    const isLeaf = node.isLeaf;
-    const isRoot = node.name === node.key;
-    const isArray = node.schema.type === 'array';
-    return (
-      <span style={{ width: '100%', display: 'block' }}>
-        <InlineEditor value={node.name} onChange={(name) => updateNodeName(key, name)}>
-          {node.name}
-        </InlineEditor>
-        <span className="pull-right">
-          <ButtonGroup>
-            {!(isLeaf && isArray) ? (
-              <span className="form-builder-add-item-menu" onClick={(e) => e.stopPropagation()}>
-                <Popover placement="rightTop" content={<AddItemMenu node={node} />} trigger="click">
-                  <Button size="small" icon="plus-circle-o" />
-                </Popover>
-              </span>
-            ) : null}
-            {!isRoot ? (
-              <span className="tree-node-delete" onClick={(e) => e.stopPropagation()}>
-                <Popconfirm
-                  placement="rightTop"
-                  title={`Delete "${key}"?`}
-                  onConfirm={() => removeNode(key)}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <Button size="small" type="danger" icon="close-circle" />
-                </Popconfirm>
-              </span>
-            ) : null}
-          </ButtonGroup>
-        </span>
-      </span>
-    );
-  }
+class TreeNodeTitle extends PureComponent {
   render() {
     const { node, removeNode, updateNodeName, searchValue } = this.props;
     const { name, key } = node;
@@ -108,13 +69,3 @@ export default connect(
       }),
   })
 )(TreeNodeTitle);
-/*
-   <Popover
-   placement="rightTop"
-   content={<AddItemMenu node={node} />}
-   trigger='click'
-   >
-   <Icon type="plus-circle-o" />
-   </Popover>
-
- */

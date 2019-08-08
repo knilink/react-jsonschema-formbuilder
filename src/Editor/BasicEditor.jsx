@@ -241,7 +241,7 @@ const widgetMap = {
     hidden: 'HiddenWidget',
     date: 'DateWidget',
     datetime: 'DateTimeWidget',
-    //"date-time": "DateTimeWidget",
+    // "date-time": "DateTimeWidget",
     'alt-date': 'AltDateWidget',
     'alt-datetime': 'AltDateTimeWidget',
     color: 'ColorWidget',

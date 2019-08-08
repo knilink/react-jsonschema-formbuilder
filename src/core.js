@@ -248,7 +248,7 @@ function updateUiSchema(node, newChildren) {
 
 function updateNodeByNewChildren(oldNode, newChildren) {
   if (!oldNode.schema) {
-    return Object.assign({}, oldNode, { children: newChildren });
+    return { ...oldNode, children: newChildren };
   }
   const schema = updateSchema(oldNode, newChildren);
   const uiSchema = updateUiSchema(oldNode, newChildren);
@@ -653,7 +653,22 @@ function getNodeByRjsfId(tree, rjsfId) {
   return null;
 }
 
-module.exports = {
+export {
+  schema2tree,
+  removeNodeByPath,
+  addNodeByPath,
+  moveNodeByPath,
+  updateNodeByPath,
+  getNode,
+  removeNode,
+  addNode,
+  moveNode,
+  updateNode,
+  schema2node,
+  getNodeByRjsfId,
+};
+
+export default {
   schema2tree,
   removeNodeByPath,
   addNodeByPath,

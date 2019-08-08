@@ -7,11 +7,7 @@ import BasicEditor from './BasicEditor';
 const { getNode } = require('../core');
 const { TabPane } = Tabs;
 
-const editorList = [
-  // StringEditor,
-  BasicEditor,
-  JsonEditor,
-];
+const editorList = [BasicEditor, JsonEditor];
 
 class Editor extends React.Component {
   updateUiOptions = (uiOptionsUpdate) => {
