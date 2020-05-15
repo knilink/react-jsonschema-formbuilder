@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import * as types from 'react-jsonschema-form/lib/types';
 
 import { getWidget, getUiOptions, optionsList, getDefaultRegistry } from './utils';
 
@@ -16,22 +17,39 @@ function BooleanField(props) {
     readonly,
     autofocus,
     onChange,
+    onFocus,
+    onBlur,
     rawErrors,
   } = props;
   const { title } = schema;
-  const { widgets, formContext } = registry;
+  const { widgets, formContext, fields } = registry;
   const { widget = 'checkbox', ...options } = getUiOptions(uiSchema);
   const Widget = getWidget(schema, widget, widgets);
-  const enumOptions = optionsList({
-    enum: [true, false],
-    enumNames: schema.enumNames || ['yes', 'no'],
-  });
+
+  let enumOptions;
+
+  if (Array.isArray(schema.oneOf)) {
+    enumOptions = optionsList({
+      oneOf: schema.oneOf.map((option) => ({
+        ...option,
+        title: option.title || (option.const === true ? 'Yes' : 'No'),
+      })),
+    });
+  } else {
+    enumOptions = optionsList({
+      enum: schema.enum || [true, false],
+      enumNames: schema.enumNames || (schema.enum && schema.enum[0] === false ? ['No', 'Yes'] : ['Yes', 'No']),
+    });
+  }
+
   return (
     <Widget
       options={{ ...options, enumOptions }}
       schema={schema}
       id={idSchema && idSchema.$id}
       onChange={onChange}
+      onFocus={onFocus}
+      onBlur={onBlur}
       label={title === undefined ? name : title}
       value={formData}
       required={required}
@@ -41,29 +59,13 @@ function BooleanField(props) {
       formContext={formContext}
       autofocus={autofocus}
       rawErrors={rawErrors}
+      DescriptionField={fields.DescriptionField}
     />
   );
 }
 
 if (process.env.NODE_ENV !== 'production') {
-  BooleanField.propTypes = {
-    schema: PropTypes.object.isRequired,
-    uiSchema: PropTypes.object,
-    idSchema: PropTypes.object,
-    onChange: PropTypes.func.isRequired,
-    formData: PropTypes.bool,
-    required: PropTypes.bool,
-    disabled: PropTypes.bool,
-    readonly: PropTypes.bool,
-    autofocus: PropTypes.bool,
-    registry: PropTypes.shape({
-      widgets: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object])).isRequired,
-      fields: PropTypes.objectOf(PropTypes.func).isRequired,
-      definitions: PropTypes.object.isRequired,
-      formContext: PropTypes.object.isRequired,
-    }),
-    rawErrors: PropTypes.arrayOf(PropTypes.string),
-  };
+  BooleanField.propTypes = types.fieldProps;
 }
 
 BooleanField.defaultProps = {

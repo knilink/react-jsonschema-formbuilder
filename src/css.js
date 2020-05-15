@@ -1,3 +1,5 @@
+import 'antd/dist/antd.css';
+/*
 import 'antd/lib/style/css';
 import 'antd/lib/layout/style/css';
 import 'antd/lib/menu/style/css';
@@ -18,3 +20,4 @@ import 'antd/lib/list/style/css';
 import 'antd/lib/card/style/css';
 import 'antd/lib/message/style/css';
 import 'antd/lib/modal/style/css';
+*/

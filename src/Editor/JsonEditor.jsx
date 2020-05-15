@@ -31,8 +31,8 @@ export default class NodeJsonEditor extends React.Component {
     return (
       <div>
         <Input value={node.name} onChange={(e) => updateNode({ name: e.target.value })} />
-        <JsonEditor value={rschema} onChange={(schema) => updateNode({ schema })} autosize />
-        <JsonEditor value={uiSchema} onChange={(uiSchema) => updateNode({ uiSchema })} autosize />
+        <JsonEditor value={rschema} onChange={(schema) => updateNode({ schema })} autoSize />
+        <JsonEditor value={uiSchema} onChange={(uiSchema) => updateNode({ uiSchema })} autoSize />
       </div>
     );
   }

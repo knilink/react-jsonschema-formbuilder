@@ -133,8 +133,7 @@ var reducer = combineReducers({
   menuOpenKeys,
 });
 
-export default function(state, action) {
-  console.log(state, action);
+export default function (state, action) {
   switch (action.type) {
     case 'TREE_REMOVE_NODE_BY_RJSF_ID': {
       const target = getNodeByRjsfId(state.tree.present, action.payload);

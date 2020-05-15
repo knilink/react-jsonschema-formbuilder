@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Row, Button, Tooltip, message, Select } from 'antd';
+import { Button, Tooltip, message, Select } from 'antd';
+import { FileAddOutlined, FolderOpenOutlined, SaveOutlined, UndoOutlined, RedoOutlined } from '@ant-design/icons';
+
 import { ActionTypes } from 'redux-undo';
 
 function write(filename, json) {
@@ -19,8 +21,8 @@ function read(e) {
   }
   var reader = new FileReader();
 
-  const p = new Promise(function(resolve) {
-    reader.onload = function(e) {
+  const p = new Promise(function (resolve) {
+    reader.onload = function (e) {
       var contents = e.target.result;
       resolve(contents);
     };
@@ -52,22 +54,26 @@ class Toolbar extends React.Component {
     const { tree, undo, redo, settings, updateSettings, newForm } = this.props;
     const { past, future } = tree;
     return (
-      <Row>
+      <span>
         <input ref={(ref) => (this.loadFile = ref)} type="file" accept="application/json" onChange={this.open} hidden />
         <Tooltip title="New">
-          <Button style={buttonStyle} onClick={newForm} icon="file-add" />
+          <Button style={buttonStyle} onClick={newForm} icon={<FileAddOutlined />} />
         </Tooltip>
         <Tooltip title="Open">
-          <Button style={buttonStyle} onClick={() => this.loadFile && this.loadFile.click()} icon="folder-open" />
+          <Button
+            style={buttonStyle}
+            onClick={() => this.loadFile && this.loadFile.click()}
+            icon={<FolderOpenOutlined />}
+          />
         </Tooltip>
         <Tooltip title="Save">
-          <Button style={buttonStyle} onClick={this.save} icon="save" />
+          <Button style={buttonStyle} onClick={this.save} icon={<SaveOutlined />} />
         </Tooltip>
         <Tooltip title="Undo">
-          <Button style={buttonStyle} onClick={undo} disabled={!past.length} icon="left" />
+          <Button style={buttonStyle} onClick={undo} disabled={!past.length} icon={<UndoOutlined />} />
         </Tooltip>
         <Tooltip title="Redo">
-          <Button style={buttonStyle} onClick={redo} disabled={!future.length} icon="right" />
+          <Button style={buttonStyle} onClick={redo} disabled={!future.length} icon={<RedoOutlined />} />
         </Tooltip>
         <Select
           mode="multiple"
@@ -80,7 +86,7 @@ class Toolbar extends React.Component {
           <Select.Option key="uiSchema">Ui Schema</Select.Option>
           <Select.Option key="formData">Data</Select.Option>
         </Select>
-      </Row>
+      </span>
     );
   }
 }

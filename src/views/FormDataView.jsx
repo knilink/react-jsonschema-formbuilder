@@ -66,14 +66,14 @@ export default connect(
         type: 'TREE_SET_TREE',
         payload: {
           name: 'root',
-          schema: console.log(json2schema(formData, 'form')) || json2schema(formData, 'form'),
+          schema: json2schema(formData, 'form'),
           uiSchema: {},
         },
       }),
   })
 )(({ formData, setFormData, genForm }) => (
   <div>
-    <JsonEditor value={formData} onChange={(value) => setFormData(value)} autosize />
+    <JsonEditor value={formData} onChange={(value) => setFormData(value)} autoSize />
     <Button type="primary" onClick={() => genForm(formData)}>
       Gen Form
     </Button>

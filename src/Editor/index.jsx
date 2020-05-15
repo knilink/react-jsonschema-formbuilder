@@ -28,7 +28,7 @@ class Editor extends React.Component {
     if (!(node && node.schema)) return null;
     const filteredEditors = editorList.filter((a) => a.filter(node));
     return (
-      <Tabs defaultActiveKey={filteredEditors[0].key} onChange={console.log}>
+      <Tabs defaultActiveKey={filteredEditors[0].key} type="card">
         {filteredEditors.map((Editor) => (
           <TabPane tab={Editor.name} key={Editor.key}>
             <div style={{ margin: '0px 16px' }}>

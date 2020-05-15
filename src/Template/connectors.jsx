@@ -1,7 +1,8 @@
 import React from 'react';
 import InlineEditor from '../InlineEditor';
 import { connect } from 'react-redux';
-import { Input, Icon, Popconfirm, Tooltip } from 'antd';
+import { Input, Popconfirm, Tooltip } from 'antd';
+import { SelectOutlined, DeleteOutlined } from '@ant-design/icons';
 const { getNodeByRjsfId } = require('../core');
 const { TextArea } = Input;
 
@@ -25,7 +26,7 @@ class InlineTextAreaEditor extends ExtendedInlineEditor {
         value={this.state.value}
         onBlur={this.onCompleteEditing}
         onChange={this.onChange}
-        autosize
+        autoSize
         onKeyUp={(e) => {
           if (e.keyCode === 27) {
             this.onCancelEditing();
@@ -36,22 +37,19 @@ class InlineTextAreaEditor extends ExtendedInlineEditor {
   }
 }
 
-const ButtonGroup = connect(
-  null,
-  (dispatch, { id }) => ({
-    select: () => dispatch({ type: 'ACTIVE_NODE_KEY_SET_BY_RJSF_ID', payload: id }),
-    remove: () => dispatch({ type: 'TREE_REMOVE_NODE_BY_RJSF_ID', payload: id }),
-  })
-)((props) => {
+const ButtonGroup = connect(null, (dispatch, { id }) => ({
+  select: () => dispatch({ type: 'ACTIVE_NODE_KEY_SET_BY_RJSF_ID', payload: id }),
+  remove: () => dispatch({ type: 'TREE_REMOVE_NODE_BY_RJSF_ID', payload: id }),
+}))((props) => {
   const { select, remove, id } = props;
   return (
     <Tooltip title={id} placement="right">
       <a href="#!">
-        <Icon onClick={select} type="select" />
+        <SelectOutlined onClick={select} />
       </a>
       <Popconfirm title={`Remove ${id}?`} onConfirm={remove}>
         <a href="#!">
-          <Icon type="delete" />
+          <DeleteOutlined />
         </a>
       </Popconfirm>
     </Tooltip>

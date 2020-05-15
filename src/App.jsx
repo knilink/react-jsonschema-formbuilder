@@ -40,7 +40,7 @@ class App extends Component {
             left: 0,
           }}
         >
-          <Tabs defaultActiveKey="0" size="small">
+          <Tabs defaultActiveKey="0" size="small" type="card">
             <TabPane tab="Editor" style={{ padding: '8px' }} key="0">
               <Tree />
             </TabPane>

@@ -17,4 +17,4 @@ export default connect(
         },
       }),
   })
-)(({ uiSchema, setTree }) => <JsonEditor value={uiSchema} onChange={(value) => setTree(value)} autosize />);
+)(({ uiSchema, setTree }) => <JsonEditor value={uiSchema} onChange={(value) => setTree(value)} autoSize />);

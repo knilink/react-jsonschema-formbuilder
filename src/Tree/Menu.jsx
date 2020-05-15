@@ -16,7 +16,10 @@ function nameGen(name, occupied) {
 class AddItemMenu extends React.Component {
   onAddNode = (node2add) => {
     const { addNode } = this.props;
-    const name = nameGen(node2add.name, this.props.node.children.map((a) => a.name));
+    const name = nameGen(
+      node2add.name,
+      this.props.node.children.map((a) => a.name)
+    );
     addNode({ ...node2add, name });
   };
   render() {
@@ -25,7 +28,6 @@ class AddItemMenu extends React.Component {
       menuOpenKeys,
       menuOpenChange,
     } = this.props;
-    console.log(menuOpenKeys);
     return (
       <Menu mode="inline" theme="dark" openKeys={menuOpenKeys} onOpenChange={menuOpenChange}>
         {menuTree.map((a) =>

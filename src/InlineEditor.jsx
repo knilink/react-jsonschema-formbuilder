@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Input, Icon } from 'antd';
+import { Input } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 
 export default class InlineEditor extends Component {
   constructor(props) {
@@ -61,7 +62,7 @@ export default class InlineEditor extends Component {
     return (
       <span>
         {this.props.children}
-        <Icon type="edit" onClick={this.onStartEditing} />
+        <EditOutlined onClick={this.onStartEditing} />
       </span>
     );
   }

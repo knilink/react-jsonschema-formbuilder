@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { Icon, Popconfirm } from 'antd';
+import { Popconfirm } from 'antd';
+import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import InlineEditor from '../InlineEditor';
 import { Dropdown } from 'antd';
 import AddItemMenu from './Menu';
@@ -15,7 +16,7 @@ class TreeNodeTitle extends PureComponent {
     const indexBefore = node.name.toLowerCase().indexOf(searchValue);
     const indexAfter = indexBefore + searchValue.length;
     return (
-      <span style={{ width: '100%', display: 'block' }}>
+      <span style={{ display: 'block' }}>
         {searchValue && indexBefore >= 0 ? (
           <InlineEditor value={node.name} onChange={(name) => updateNodeName(key, name)}>
             {name.slice(0, indexBefore)}
@@ -31,7 +32,7 @@ class TreeNodeTitle extends PureComponent {
           {!(isLeaf || isArray) ? (
             <span className="form-builder-add-item-menu" onClick={(e) => e.stopPropagation()}>
               <Dropdown placement="bottomLeft" trigger={['click']} overlay={<AddItemMenu node={node} />}>
-                <Icon type="plus-circle-o" />
+                <PlusCircleOutlined />
               </Dropdown>
             </span>
           ) : null}
@@ -44,7 +45,7 @@ class TreeNodeTitle extends PureComponent {
                 okText="Yes"
                 cancelText="No"
               >
-                <Icon type="close-circle" />
+                <CloseCircleOutlined />
               </Popconfirm>
             </span>
           ) : null}
@@ -54,18 +55,15 @@ class TreeNodeTitle extends PureComponent {
   }
 }
 
-export default connect(
-  null,
-  (dispatch) => ({
-    removeNode: (key) =>
-      dispatch({
-        type: 'TREE_REMOVE_NODE',
-        payload: key,
-      }),
-    updateNodeName: (key, name) =>
-      dispatch({
-        type: 'TREE_UPDATE_NODE',
-        payload: { target: key, nodeUpdate: { name } },
-      }),
-  })
-)(TreeNodeTitle);
+export default connect(null, (dispatch) => ({
+  removeNode: (key) =>
+    dispatch({
+      type: 'TREE_REMOVE_NODE',
+      payload: key,
+    }),
+  updateNodeName: (key, name) =>
+    dispatch({
+      type: 'TREE_UPDATE_NODE',
+      payload: { target: key, nodeUpdate: { name } },
+    }),
+}))(TreeNodeTitle);

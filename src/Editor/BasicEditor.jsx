@@ -1,5 +1,7 @@
 import React from 'react';
-import { Input, InputNumber, Select, Row, Col, Icon, Button, List, Dropdown, Menu, Switch, Slider } from 'antd';
+import { Input, InputNumber, Select, Row, Col, Button, List, Dropdown, Menu, Switch, Slider } from 'antd';
+import { EditOutlined, CaretDownOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
+
 import lodash from 'lodash';
 const { TextArea } = Input;
 const { Option } = Select;
@@ -18,7 +20,9 @@ export function _FormItemTemplate({ title, children }) {
 export function FormItemTemplate({ title, children, remove }) {
   return (
     <List.Item
-      actions={remove ? [<Button onClick={remove} size="small" type="danger" shape="circle" icon="close" />] : null}
+      actions={
+        remove ? [<Button onClick={remove} size="small" type="danger" shape="circle" icon={<CloseOutlined />} />] : null
+      }
     >
       <List.Item.Meta title={title} description={children} />
     </List.Item>
@@ -27,7 +31,7 @@ export function FormItemTemplate({ title, children, remove }) {
 
 class TimeThrottle extends React.Component {
   throttle = 1000;
-  editing = <Icon type="edit" />;
+  editing = (<EditOutlined />);
   constructor(props) {
     super(props);
     this.state = {
@@ -356,7 +360,7 @@ function description({ node: { schema }, updateSchema: update }) {
         title={title}
         value={value}
         onChange={(value) => update({ [key]: value || undefined })}
-        autosize
+        autoSize
       />,
     ];
   }
@@ -442,7 +446,7 @@ class ClassNamesEditor extends React.Component {
           <Col xs={4}>
             <Dropdown overlay={this.renderMenu()}>
               <a>
-                {col} <Icon type="down" />
+                {col} <CaretDownOutlined />
               </a>
             </Dropdown>
           </Col>
@@ -661,7 +665,7 @@ function uniqueItems({ node: { schema }, updateSchema: update }) {
             size="small"
             type="danger"
             shape="circle"
-            icon="close"
+            icon={<CloseOutlined />}
           />,
         ]}
       >
@@ -672,34 +676,35 @@ function uniqueItems({ node: { schema }, updateSchema: update }) {
   }
 }
 
-const [enumKey, enumName] = [['enum', 'Enum'], ['enumNames', 'Enum Names']].map(
-  ([key, title]) => ({ node: { schema }, updateSchema: update }) => {
-    if (schema.type !== 'string') return [];
-    if (schema[key] === undefined) {
-      return [
-        <Menu.Item key={key} onClick={() => update({ [key]: [] })}>
-          {title}
-        </Menu.Item>,
-      ];
-    } else {
-      return [
-        null,
-        <FormItemTemplate key={key} title={title} remove={() => update({ [key]: undefined })}>
-          <Select
-            mode="tags"
-            style={{ width: '100%' }}
-            onChange={(values) => update({ [key]: values })}
-            value={schema[key]}
-          >
-            {schema[key].map((a) => (
-              <Select.Option key={a}>{a}</Select.Option>
-            ))}
-          </Select>
-        </FormItemTemplate>,
-      ];
-    }
+const [enumKey, enumName] = [
+  ['enum', 'Enum'],
+  ['enumNames', 'Enum Names'],
+].map(([key, title]) => ({ node: { schema }, updateSchema: update }) => {
+  if (schema.type !== 'string') return [];
+  if (schema[key] === undefined) {
+    return [
+      <Menu.Item key={key} onClick={() => update({ [key]: [] })}>
+        {title}
+      </Menu.Item>,
+    ];
+  } else {
+    return [
+      null,
+      <FormItemTemplate key={key} title={title} remove={() => update({ [key]: undefined })}>
+        <Select
+          mode="tags"
+          style={{ width: '100%' }}
+          onChange={(values) => update({ [key]: values })}
+          value={schema[key]}
+        >
+          {schema[key].map((a) => (
+            <Select.Option key={a}>{a}</Select.Option>
+          ))}
+        </Select>
+      </FormItemTemplate>,
+    ];
   }
-);
+});
 
 const formatOptions = ['date-time', 'email', 'hostname', 'ipv4', 'ipv6', 'uri'];
 function format({ node: { schema }, updateSchema: update }) {
@@ -770,7 +775,7 @@ export default class BasicEditor extends React.Component {
       editable.push(
         <List.Item key="addButton">
           <Dropdown trigger={['click']} overlay={<Menu>{addable}</Menu>}>
-            <Button style={{ width: '100%' }} type="primary" icon="plus" />
+            <Button style={{ width: '100%' }} type="primary" icon={<PlusOutlined />} />
           </Dropdown>
         </List.Item>
       );
