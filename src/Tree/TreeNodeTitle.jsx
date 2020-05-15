@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Popconfirm } from 'antd';
-import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, CloseCircleFilled } from '@ant-design/icons';
 import InlineEditor from '../InlineEditor';
 import { Dropdown } from 'antd';
 import AddItemMenu from './Menu';
@@ -45,7 +45,7 @@ class TreeNodeTitle extends PureComponent {
                 okText="Yes"
                 cancelText="No"
               >
-                <CloseCircleOutlined />
+                <CloseCircleFilled />
               </Popconfirm>
             </span>
           ) : null}

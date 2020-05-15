@@ -660,13 +660,7 @@ function uniqueItems({ node: { schema }, updateSchema: update }) {
       null,
       <List.Item
         actions={[
-          <Button
-            onClick={() => update({ [key]: undefined })}
-            size="small"
-            type="danger"
-            shape="circle"
-            icon={<CloseOutlined />}
-          />,
+          <Button onClick={() => update({ [key]: undefined })} size="small" type="danger" icon={<CloseOutlined />} />,
         ]}
       >
         <List.Item.Meta title={title} />
