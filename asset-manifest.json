@@ -1,25 +1,25 @@
 {
   "files": {
     "main.css": "/react-jsonschema-formbuilder/static/css/main.1b984c0b.chunk.css",
-    "main.js": "/react-jsonschema-formbuilder/static/js/main.341338f3.chunk.js",
-    "main.js.map": "/react-jsonschema-formbuilder/static/js/main.341338f3.chunk.js.map",
-    "runtime-main.js": "/react-jsonschema-formbuilder/static/js/runtime-main.57963c63.js",
-    "runtime-main.js.map": "/react-jsonschema-formbuilder/static/js/runtime-main.57963c63.js.map",
-    "static/css/2.d7262850.chunk.css": "/react-jsonschema-formbuilder/static/css/2.d7262850.chunk.css",
-    "static/js/2.a0a0cb26.chunk.js": "/react-jsonschema-formbuilder/static/js/2.a0a0cb26.chunk.js",
-    "static/js/2.a0a0cb26.chunk.js.map": "/react-jsonschema-formbuilder/static/js/2.a0a0cb26.chunk.js.map",
+    "main.js": "/react-jsonschema-formbuilder/static/js/main.a88fd833.chunk.js",
+    "main.js.map": "/react-jsonschema-formbuilder/static/js/main.a88fd833.chunk.js.map",
+    "runtime-main.js": "/react-jsonschema-formbuilder/static/js/runtime-main.1c481c60.js",
+    "runtime-main.js.map": "/react-jsonschema-formbuilder/static/js/runtime-main.1c481c60.js.map",
+    "static/css/2.c27a359e.chunk.css": "/react-jsonschema-formbuilder/static/css/2.c27a359e.chunk.css",
+    "static/js/2.89ffc16f.chunk.js": "/react-jsonschema-formbuilder/static/js/2.89ffc16f.chunk.js",
+    "static/js/2.89ffc16f.chunk.js.map": "/react-jsonschema-formbuilder/static/js/2.89ffc16f.chunk.js.map",
     "index.html": "/react-jsonschema-formbuilder/index.html",
-    "precache-manifest.2df5039cfc0a165fac747c06c5f3d45a.js": "/react-jsonschema-formbuilder/precache-manifest.2df5039cfc0a165fac747c06c5f3d45a.js",
+    "precache-manifest.012707e503a452d426256f8f81521d0c.js": "/react-jsonschema-formbuilder/precache-manifest.012707e503a452d426256f8f81521d0c.js",
     "service-worker.js": "/react-jsonschema-formbuilder/service-worker.js",
-    "static/css/2.d7262850.chunk.css.map": "/react-jsonschema-formbuilder/static/css/2.d7262850.chunk.css.map",
+    "static/css/2.c27a359e.chunk.css.map": "/react-jsonschema-formbuilder/static/css/2.c27a359e.chunk.css.map",
     "static/css/main.1b984c0b.chunk.css.map": "/react-jsonschema-formbuilder/static/css/main.1b984c0b.chunk.css.map",
-    "static/js/2.a0a0cb26.chunk.js.LICENSE.txt": "/react-jsonschema-formbuilder/static/js/2.a0a0cb26.chunk.js.LICENSE.txt"
+    "static/js/2.89ffc16f.chunk.js.LICENSE.txt": "/react-jsonschema-formbuilder/static/js/2.89ffc16f.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.57963c63.js",
-    "static/css/2.d7262850.chunk.css",
-    "static/js/2.a0a0cb26.chunk.js",
+    "static/js/runtime-main.1c481c60.js",
+    "static/css/2.c27a359e.chunk.css",
+    "static/js/2.89ffc16f.chunk.js",
     "static/css/main.1b984c0b.chunk.css",
-    "static/js/main.341338f3.chunk.js"
+    "static/js/main.a88fd833.chunk.js"
   ]
 }
