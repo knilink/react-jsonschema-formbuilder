@@ -4,8 +4,8 @@ import ArrayField from './ArrayField';
 import BooleanField from './BooleanField';
 import StringField from './StringField';
 import SchemaField from './SchemaField';
-import { getWidget as _getWidget } from 'react-jsonschema-form/lib/utils';
-export * from 'react-jsonschema-form/lib/utils';
+import { getWidget as _getWidget } from '@rjsf/core/lib/utils';
+export * from '@rjsf/core/lib/utils';
 
 function Error(msg) {
   return () => <Alert message={msg} type="error" showIcon />;
@@ -31,7 +31,7 @@ function TitleField(props) {
 
 export function getDefaultRegistry() {
   const fields = {
-    ...require('react-jsonschema-form/lib/components/fields').default,
+    ...require('@rjsf/core/lib/components/fields').default,
     ArrayField,
     StringField,
     BooleanField,
@@ -40,7 +40,7 @@ export function getDefaultRegistry() {
   };
   return {
     fields,
-    widgets: require('react-jsonschema-form/lib/components/widgets').default,
+    widgets: require('@rjsf/core/lib/components/widgets').default,
     definitions: {},
     formContext: {},
   };

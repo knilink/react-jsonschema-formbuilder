@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import * as types from 'react-jsonschema-form/lib/types';
+import * as types from '@rjsf/core/lib/types';
 
 import { getWidget, getUiOptions, optionsList, getDefaultRegistry } from './utils';
 

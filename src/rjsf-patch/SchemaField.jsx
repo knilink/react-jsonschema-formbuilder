@@ -1,4 +1,4 @@
-import SchemaField from 'react-jsonschema-form/lib/components/fields/SchemaField';
+import SchemaField from '@rjsf/core/lib/components/fields/SchemaField';
 import { notification } from 'antd';
 
 export default class PatchedSchemaField extends SchemaField {

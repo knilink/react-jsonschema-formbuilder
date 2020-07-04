@@ -445,9 +445,9 @@ class ClassNamesEditor extends React.Component {
         <Row type="flex" align="middle">
           <Col xs={4}>
             <Dropdown overlay={this.renderMenu()}>
-              <a>
+              <Button type="link">
                 {col} <CaretDownOutlined />
-              </a>
+              </Button>
             </Dropdown>
           </Col>
           <Col xs={20}>

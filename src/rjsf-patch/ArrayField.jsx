@@ -1,5 +1,5 @@
 import React from 'react';
-import ArrayField from 'react-jsonschema-form/lib/components/fields/ArrayField';
+import ArrayField from '@rjsf/core/lib/components/fields/ArrayField';
 
 import { getWidget, getUiOptions, optionsList, retrieveSchema, getDefaultRegistry } from './utils';
 
