@@ -1,14 +1,28 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import * as React from 'react';
 import { Tabs } from 'antd';
-import JsonEditor from './JsonEditor';
-import BasicEditor from './BasicEditor';
+import { NodeJsonEditor } from './JsonEditor';
+import { SchemaEditor } from './SchemaEditor';
 
 const { getNode } = require('../core');
 const { TabPane } = Tabs;
 
-const editorList = [BasicEditor, JsonEditor];
+// const editorList = [NodeJsonEditor];
 
+export const Editor: React.FC = () => {
+  const Editor = NodeJsonEditor;
+  return (
+    <Tabs defaultActiveKey={'schema'} type="card">
+      <TabPane tab={'Schema'} key={'schema'} style={{ padding: '0px 16px' }}>
+        <SchemaEditor />
+      </TabPane>
+      <TabPane tab={'Json'} key={'json'} style={{ padding: '0px 16px' }}>
+        <Editor />
+      </TabPane>
+    </Tabs>
+  );
+};
+
+/*
 class Editor extends React.Component {
   updateUiOptions = (uiOptionsUpdate) => {
     const { uiSchema = {}, key } = this.props.node;
@@ -65,3 +79,4 @@ export default connect(
       }),
   })
 )(Editor);
+*/

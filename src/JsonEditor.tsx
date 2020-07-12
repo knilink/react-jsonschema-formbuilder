@@ -1,7 +1,47 @@
-import React from 'react';
+import * as React from 'react';
 import { Input, Alert } from 'antd';
+import { TextAreaProps } from 'antd/lib/input';
+
 const { TextArea } = Input;
-function shallowEqual(objA, objB) {
+
+const JsonEditor: React.FC<{ value: any } & Omit<TextAreaProps, 'value'>> = (props) => {
+  const { value, onChange } = props;
+  const stringValueRead = React.useMemo(() => JSON.stringify(value, null, 2), [value]);
+  const [stringValue, setStringValue] = React.useState<string>('');
+  const [error, setError] = React.useState<Error | null>(null);
+  const [focus, setFocus] = React.useState<boolean>(false);
+
+  const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+    const value = e.target.value;
+    setStringValue(value);
+    try {
+      const obj = value ? JSON.parse(value) : null;
+      setError(null);
+      obj && onChange && onChange(obj);
+    } catch (error) {
+      setError(error);
+    }
+  };
+  return (
+    <TextArea
+      {...props}
+      value={focus ? stringValue : stringValueRead}
+      onChange={handleChange}
+      onFocus={() => {
+        setFocus(true);
+        setStringValue(stringValueRead);
+      }}
+      onBlur={() => {
+        setFocus(false);
+      }}
+    />
+  );
+};
+
+export default JsonEditor;
+
+/*
+function shallowEqual(objA: object, objB: object) {
   if (objA === objB) {
     return true;
   }
@@ -119,3 +159,4 @@ export default class JsonEditor extends React.Component {
     );
   }
 }
+*/
