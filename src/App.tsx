@@ -6,8 +6,9 @@ import { FormSchemaTree } from './Tree/Tree';
 // import { FormView, SchemaView, UiSchemaView, FormDataView } from './views';
 import { FormView } from './views/FormView';
 import { SchemaView } from './views/SchemaView';
+import { ExtraPropsView } from './views/ExtraPropsView';
 import { Editor } from './Editor/Editor';
-// import Toolbar from './Toolbar';
+import { Toolbar } from './Toolbar';
 // import Settings from './Settings';
 import { Provider, SettingsContext, FormBuilderContext } from './FormBuilderContext';
 
@@ -45,7 +46,7 @@ const App: React.FC<{}> = () => {
         </Tabs>
       </Sider>
       <Layout style={{ marginLeft: settings.leftSiderWidth }}>
-        <Header style={{ background: '#fff', padding: 0 }}>{/* <Toolbar /> */}</Header>
+        <Header style={{ background: '#fff', padding: 0 }}>{<Toolbar />}</Header>
         <Content style={{ minHeight: 280, padding: '12px 8px' }}>
           <Card
             bordered={false}
@@ -67,10 +68,10 @@ const App: React.FC<{}> = () => {
                     <SchemaView />
                   </Card>
                 );
-              case 'uiSchema':
+              case 'extraProps':
                 return (
-                  <Card key="uiSchema" title="Ui Schema" style={style}>
-                    {/* <UiSchemaView /> */}
+                  <Card key="extraProps" title="Ui Schema" style={style}>
+                    <ExtraPropsView />
                   </Card>
                 );
               case 'formData':

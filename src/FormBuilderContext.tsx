@@ -11,7 +11,7 @@ interface ISettings {
   rightSiderWidth: number;
   isInlineMode: boolean;
   isLiveValidate: boolean;
-  subViews: ('schema' | 'uiSchema' | 'formData')[];
+  subViews: ('schema' | 'extraProps' | 'formData')[];
 }
 
 export interface SettingsContext {
@@ -46,7 +46,7 @@ const defaultSettings: ISettings = {
   rightSiderWidth: 360,
   formWidth: 600,
   isInlineMode: true,
-  subViews: ['schema', 'uiSchema', 'formData'],
+  subViews: ['schema', 'extraProps', 'formData'],
   isLiveValidate: false,
 };
 

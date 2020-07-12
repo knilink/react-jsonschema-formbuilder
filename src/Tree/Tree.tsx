@@ -77,12 +77,12 @@ export const FormSchemaTree: React.FC = () => {
     (info) => {
       const dropKey = info.node.key;
       const dragKey = info.dragNode.key;
-      // const dropPos = info.node.pos.split('-');
-      // const dropPosition = info.dropPosition - +dropPos[dropPos.length - 1];
+      const dropPos = info.node.pos.split('-');
+      const dropPosition = info.dropPosition - +dropPos[dropPos.length - 1];
       const src = key2path(dragKey);
       const dst = key2path(dropKey);
       if (src && dst) {
-        setSchema(moveSchemaNode(schema, src, dst, info.dropPosition));
+        setSchema(moveSchemaNode(schema, src, dst, dropPosition));
       }
     },
     [schema]

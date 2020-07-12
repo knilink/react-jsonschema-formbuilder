@@ -162,22 +162,21 @@ export function addSchemaNode(
 
   let newChildren: { [key: string]: JSONSchema7Definition } = {};
   let added = false;
-  let count = 0;
 
   const dstName = path[path.length - 1];
   for (const prop in children) {
     if (prop === dstName) {
-      if (count < position) {
+      if (position > 0) {
         newChildren[prop] = children[prop];
         newChildren[name] = node;
         added = true;
       }
-      if (count > position) {
+      if (position < 0) {
         newChildren[name] = node;
         newChildren[prop] = children[prop];
         added = true;
       }
-      if (count === position) {
+      if (position === 0) {
         const schemaTarget = children[prop];
         if (typeof schemaTarget !== 'boolean' && schemaTarget.type === 'object') {
           // dst is object
@@ -193,13 +192,12 @@ export function addSchemaNode(
         } else {
           newChildren[prop] = children[prop];
           newChildren[name] = node;
-          added = true;
         }
+        added = true;
       }
     } else {
       newChildren[prop] = children[prop];
     }
-    count++;
   }
 
   return added
@@ -256,16 +254,16 @@ function reorder(
   position: number
 ): JSONSchema7['properties'] {
   const newProperties: JSONSchema7['properties'] = {};
-  let count = 0;
+
   for (const prop in properties) {
     if (prop === src) {
     } else {
       if (prop === dst) {
-        if (position < count) {
+        if (position < 0) {
           // before dst
           newProperties[src] = properties[src];
           newProperties[prop] = properties[prop];
-        } else if (position > count) {
+        } else if (position > 0) {
           // after dst
           newProperties[prop] = properties[prop];
           newProperties[src] = properties[src];
@@ -291,7 +289,6 @@ function reorder(
         newProperties[prop] = properties[prop];
       }
     }
-    count++;
   }
   return newProperties;
 }

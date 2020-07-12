@@ -1,11 +1,14 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import * as React from 'react';
+// import { connect } from 'react-redux';
 import { Button, Tooltip, message, Select } from 'antd';
 import { FileAddOutlined, FolderOpenOutlined, SaveOutlined, UndoOutlined, RedoOutlined } from '@ant-design/icons';
+import { JSONSchema7 } from 'json-schema';
+import { FormBuilderContext } from './FormBuilderContext';
+import { rejects } from 'assert';
 
-import { ActionTypes } from 'redux-undo';
+// import { ActionTypes } from 'redux-undo';
 
-function write(filename, json) {
+function write(filename: string, json: any) {
   const a = window.document.createElement('a');
   a.href = window.URL.createObjectURL(new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' }));
   a.download = `${filename}.json`;
@@ -14,17 +17,19 @@ function write(filename, json) {
   document.body.removeChild(a);
 }
 
-function read(e) {
-  var file = e.target.files[0];
-  if (!file) {
-    return;
-  }
+function read(e: React.ChangeEvent<HTMLInputElement>) {
+  var files = e?.target?.files;
+  const file = files && files[0];
+  if (!file) throw new Error('No file');
   var reader = new FileReader();
 
-  const p = new Promise(function (resolve) {
+  const p = new Promise<string>(function (resolve, reject) {
     reader.onload = function (e) {
-      var contents = e.target.result;
-      resolve(contents);
+      if (e?.target?.result) {
+        resolve(e.target.result.toString());
+      } else {
+        reject();
+      }
     };
   });
   reader.readAsText(file);
@@ -32,7 +37,72 @@ function read(e) {
 }
 
 const buttonStyle = { marginLeft: 8 };
-class Toolbar extends React.Component {
+
+export const Toolbar: React.FC = () => {
+  const { setSchema, setExtraProps } = React.useContext(FormBuilderContext);
+
+  const handleNew = React.useCallback(() => {
+    return;
+    setSchema({ type: 'object' });
+    setExtraProps({});
+  }, [setSchema, setExtraProps]);
+
+  const handleOpen = React.useCallback<React.ChangeEventHandler<HTMLInputElement>>(async (e) => {
+    return;
+    try {
+      const s = await read(e);
+      const { schema, extraProps } = JSON.parse(s);
+      setSchema(schema as JSONSchema7);
+      setExtraProps(extraProps);
+    } catch (e) {
+      message.error('Invalid json file!');
+    }
+  }, []);
+
+  const inputRef = React.useRef(null);
+
+  return (
+    <span>
+      <input ref={inputRef} type="file" accept="application/json" onChange={handleOpen} hidden />
+      <Tooltip title="New">
+        <Button style={buttonStyle} onClick={handleNew} icon={<FileAddOutlined />} />
+      </Tooltip>
+      <Tooltip title="Open">
+        <Button
+          style={buttonStyle}
+          onClick={() => {
+            // inputRef.current?.click(null)
+          }}
+          icon={<FolderOpenOutlined />}
+        />
+      </Tooltip>
+      <Tooltip title="Save">
+        <Button style={buttonStyle} onClick={() => {}} icon={<SaveOutlined />} />
+      </Tooltip>
+      <Tooltip title="Undo">
+        <Button style={buttonStyle} onClick={() => {}} disabled={false /*!past.length*/} icon={<UndoOutlined />} />
+      </Tooltip>
+      <Tooltip title="Redo">
+        <Button style={buttonStyle} onClick={() => {}} disabled={false /*!future.length*/} icon={<RedoOutlined />} />
+      </Tooltip>
+      {/*<Select
+        mode="multiple"
+        style={{ width: 290, marginLeft: 12 }}
+        value={settings.subViews}
+        onChange={updateSettings}
+        placeholder="Select sub views..."
+      >
+        <Select.Option key="schema">Schema</Select.Option>
+        <Select.Option key="uiSchema">Ui Schema</Select.Option>
+        <Select.Option key="formData">Data</Select.Option>
+      </Select>*/}
+    </span>
+  );
+};
+
+/*
+
+class Toolbar_ extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -112,3 +182,4 @@ export default connect(
       }),
   })
 )(Toolbar);
+*/

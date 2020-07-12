@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Menu } from 'antd';
 import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 import { FormBuilderContext } from '../FormBuilderContext';
-import { addSchemaNode, addExtraPropsNode } from '../utils';
+import { addSchemaNode, addExtraPropsNode, getSchemaByPath } from '../utils';
 const { SubMenu, Item } = Menu;
 
 function nameGen(name: string, occupied: string[]) {
@@ -66,7 +66,9 @@ const menuExtraProps = {
 };
 
 export const AddItemMenu: React.FC<{ schemaPath: (string | number)[] }> = ({ schemaPath }) => {
-  const { schema, setSchema, selectedSchema, extraProps, setExtraProps } = React.useContext(FormBuilderContext);
+  const { schema, setSchema, extraProps, setExtraProps, setSelectedNodePath } = React.useContext(FormBuilderContext);
+
+  const selectedSchema = getSchemaByPath(schema, schemaPath);
 
   const handleAddNode = (key: string, newSchemaNode: JSONSchema7Definition, newExtraPropsNode: any) => {
     if (typeof selectedSchema === 'boolean' || !selectedSchema?.properties) return;
@@ -75,13 +77,12 @@ export const AddItemMenu: React.FC<{ schemaPath: (string | number)[] }> = ({ sch
     const childrenNames = Object.keys(properties);
     const name = nameGen(key, childrenNames);
 
-    /*const newSchema = addSchemaNode(
-      schema,
-      newSchemaNode,
-      [...schemaPath, 'properties', childrenNames[childrenNames.length - 1]],
-      name
-
-    );*/
+    const newSchema = addSchemaNode(schema, schemaPath, 0, name, newSchemaNode);
+    if (newSchema !== schema) {
+      setSchema(newSchema);
+      setExtraProps(addExtraPropsNode(extraProps, [...schemaPath, 'properties', name], newExtraPropsNode));
+      setSelectedNodePath([...schemaPath, 'properties', name]);
+    }
   };
 
   const { properties } = menueSchema;
@@ -93,6 +94,7 @@ export const AddItemMenu: React.FC<{ schemaPath: (string | number)[] }> = ({ sch
       {Object.keys(properties).map((key) => {
         const itemSchema = properties[key];
         const itemExtraProps = (menuExtraProps.properties as any)[key];
+        key === 'textarea' && console.log(itemExtraProps);
         if (typeof itemSchema === 'boolean') return null;
 
         return (
