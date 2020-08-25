@@ -7,7 +7,7 @@ function nameGen(name, occupied) {
   let n = 1;
   let newName = name;
   while (occupied && occupied.includes(newName)) {
-    newName = name + '_' + n;
+    newName = name + '#' + n;
     n += 1;
   }
   return newName;
