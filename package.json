@@ -3,13 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@ant-design/icons": "^4.2.1",
-    "@rjsf/core": "^2.2.0",
-    "antd": "^4.4.0",
+    "@ant-design/icons": "^4.2.2",
+    "@rjsf/core": "^2.3.0",
+    "antd": "^4.6.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-redux": "^7.2.0",
-    "react-scripts": "^3.4.1",
+    "react-redux": "^7.2.1",
+    "react-scripts": "^3.4.3",
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0",
     "redux-undo": "^1.0.1"
@@ -38,9 +38,9 @@
   },
   "devDependencies": {
     "gh-pages": "^3.1.0",
-    "husky": "^4.2.5",
-    "prettier": "^2.0.5",
-    "pretty-quick": "^2.0.1"
+    "husky": "^4.3.0",
+    "prettier": "^2.1.1",
+    "pretty-quick": "^3.0.0"
   },
   "husky": {
     "hooks": {
