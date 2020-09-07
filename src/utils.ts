@@ -1,5 +1,5 @@
 import { JSONSchema7Definition, JSONSchema7 } from 'json-schema';
-import { get, find, isEqual, identity } from 'lodash';
+import { get, isEqual } from 'lodash';
 
 function set(obj: any, path: (string | number)[], value: any): any {
   if (!path.length) return value;

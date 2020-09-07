@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import get from 'lodash/get';
 import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
-import { MiddlewareProps } from '@gravel-form/antd';
 import { SchemaPath, getSchemaByPath } from './utils';
 
 interface ISettings {

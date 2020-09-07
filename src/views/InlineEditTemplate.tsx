@@ -48,7 +48,14 @@ export const FormItemTemplateMw: React.ComponentType<MiddlewareProps> = (props) 
       required={isRequired(props)}
       {...get(extraProps, 'formItem')}
     >
-      {next(props)}
+      <div
+        style={{ background: '#FFF' }}
+        onClick={(event) => {
+          event.stopPropagation();
+        }}
+      >
+        {next(props)}
+      </div>
     </Form.Item>
   );
 };
@@ -63,10 +70,10 @@ export const ColMw: React.ComponentType<MiddlewareProps> = (props) => {
 
   const handleMouseEnter = React.useCallback<React.MouseEventHandler>(() => setHover(true), [setHover, colRef]);
   const handleMouseLeave = React.useCallback<React.MouseEventHandler>(() => setHover(false), [setHover, colRef]);
-  const handleClick = React.useCallback<React.MouseEventHandler>(() => setSelectedNodePath(schemaPath), [
-    schemaPath,
-    setSelectedNodePath,
-  ]);
+  const handleClick = React.useCallback<React.MouseEventHandler>(
+    () => setSelectedNodePath(selected ? null : schemaPath),
+    [schemaPath, setSelectedNodePath]
+  );
 
   const atom = typeof schema === 'boolean' || schema.type !== 'object';
 

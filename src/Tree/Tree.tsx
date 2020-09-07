@@ -3,19 +3,13 @@ import { flatMap } from 'lodash';
 import { Tree, Input } from 'antd';
 import { TreeProps } from 'antd/lib/tree';
 import { DataNode } from 'rc-tree/lib/interface';
-import { INode, path2key, key2path, moveSchemaNode } from '../utils';
+import { path2key, key2path, moveSchemaNode } from '../utils';
 import { FormBuilderContext } from '../FormBuilderContext';
 import { compose, MiddlewareProps } from '@gravel-form/core-rc';
 import { Middleware } from '@gravel-form/core-rc/lib/compose';
-import { JSONSchema7Definition } from 'json-schema';
 
 import { TreeNodeTitle } from './TreeNodeTitle';
-const { TreeNode } = Tree;
 const { Search } = Input;
-
-function isClassComponent<T>(Component: React.ComponentType<T>): Component is React.ComponentClass<T> {
-  return Component.prototype && Component.prototype.isReactComponent;
-}
 
 interface TreeMiddlewareProps extends Pick<MiddlewareProps, 'schema' | 'schemaPath'> {
   parent: TreeMiddlewareProps | null;
@@ -85,7 +79,7 @@ export const FormSchemaTree: React.FC = () => {
         setSchema(moveSchemaNode(schema, src, dst, dropPosition));
       }
     },
-    [schema]
+    [schema, setSchema]
   );
 
   const handleExpand: TreeProps['onExpand'] = setExpandedKeys;

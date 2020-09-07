@@ -1,9 +1,42 @@
 import * as React from 'react';
+import isNil from 'lodash/isNil';
+import toString from 'lodash/toString';
 import { JSONSchema7 } from 'json-schema';
-import { Input, List, Divider, Button, Menu, Dropdown } from 'antd';
+import { Input, List, Divider, Button, Menu, Dropdown, Row, Col } from 'antd';
 import { EditOutlined, CaretDownOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import { FormBuilderContext } from '../FormBuilderContext';
 import { replaceSchemaNode } from '../utils';
+
+import {
+  Form,
+  presetMws,
+  SubmitButtonWithValidationMw,
+  FieldsetTemplateMw,
+  RowMw,
+  MiddlewareProps,
+} from '@gravel-form/antd';
+
+import { ExtraPropsMw, LocalRefMw, FixedObjectMw, FixedArrayMw } from '@gravel-form/antd/lib/core';
+import { formControlMws } from '@gravel-form/antd/lib/preset';
+
+const FormControlTemplate: React.ComponentType<MiddlewareProps> = (props) => {
+  const { schema, schemaPath, next, data } = props;
+  if (typeof schema === 'boolean') return next(props);
+  const title = schema.title || schemaPath[schemaPath.length - 1];
+
+  return (
+    <Row gutter={[16, 16]}>
+      <Col span={8} style={{ textAlign: 'right' }}>
+        {title}:
+      </Col>
+      <Col span={16}>
+        <div style={{ background: '#f0f0f0', width: '100%' }}>{isNil(data) ? <>&#8203;</> : toString(data)}</div>
+      </Col>
+    </Row>
+  );
+};
+
+const mws = [ExtraPropsMw, FieldsetTemplateMw, FixedObjectMw, FixedArrayMw, FormControlTemplate];
 
 interface ISchemaEditor {
   schema: JSONSchema7;
@@ -43,9 +76,22 @@ const editors: {
       );
     },
   },
+  {
+    key: 'length',
+    title: 'Length',
+    setDefault: (schema) => ({ ...schema, length: undefined }),
+    handleRemove: (schema) => {
+      const { description, ...rest } = schema;
+      return rest;
+    },
+    Component: ({ schema, onUpdate }) => {
+      return (
+        <Input value={schema.description} onChange={(e) => onUpdate({ ...schema, description: e.target.value })} />
+      );
+    },
+  },
 ];
-
-export const SchemaEditor: React.FC = () => {
+export const SchemaEditor_: React.FC = () => {
   const { selectedSchema, selectedNodePath, schema, setSchema } = React.useContext(FormBuilderContext);
 
   if (!selectedNodePath || !selectedSchema || typeof selectedSchema === 'boolean') return null;
@@ -92,3 +138,39 @@ export const SchemaEditor: React.FC = () => {
     />
   );
 };
+
+const Foo = () => {
+  const { schema, selectedSchema, selectedNodePath, setSchema } = React.useContext(FormBuilderContext);
+  if (!selectedNodePath || !selectedSchema || typeof selectedSchema === 'boolean') return null;
+  const handleUpdate = (newSchemaNode: JSONSchema7) => {
+    setSchema(replaceSchemaNode(schema, selectedNodePath, newSchemaNode));
+  };
+  return (
+    <Form
+      size="small"
+      labelCol={{
+        xs: { span: 24 },
+        sm: { span: 6 },
+      }}
+      schema={{
+        type: 'object',
+        properties: {
+          title: { type: 'string', title: 'Title' },
+          description: { type: 'string', title: 'Description' },
+        },
+      }}
+      extraProps={{
+        properties: {
+          description: {
+            component: 'TextArea',
+          },
+        },
+      }}
+      middlewares={mws}
+      data={selectedSchema}
+      onChange={handleUpdate as any}
+    />
+  );
+};
+
+export const SchemaEditor = Foo;

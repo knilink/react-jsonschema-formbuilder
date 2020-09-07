@@ -1,12 +1,8 @@
 import * as React from 'react';
-// import { connect } from 'react-redux';
-import { Button, Tooltip, message, Select } from 'antd';
+import { Button, Tooltip, message } from 'antd';
 import { FileAddOutlined, FolderOpenOutlined, SaveOutlined, UndoOutlined, RedoOutlined } from '@ant-design/icons';
 import { JSONSchema7 } from 'json-schema';
 import { FormBuilderContext } from './FormBuilderContext';
-import { rejects } from 'assert';
-
-// import { ActionTypes } from 'redux-undo';
 
 function write(filename: string, json: any) {
   const a = window.document.createElement('a');
@@ -38,28 +34,83 @@ function read(e: React.ChangeEvent<HTMLInputElement>) {
 
 const buttonStyle = { marginLeft: 8 };
 
+interface FormSchema {
+  schema: JSONSchema7;
+  extraProps: any;
+}
+
+interface History {
+  past: FormSchema[];
+  current: FormSchema;
+  future: FormSchema[];
+}
+
 export const Toolbar: React.FC = () => {
-  const { setSchema, setExtraProps } = React.useContext(FormBuilderContext);
+  const { setSchema, setExtraProps, schema, extraProps } = React.useContext(FormBuilderContext);
+
+  const { current: history } = React.useRef<History>({ past: [], current: { schema, extraProps }, future: [] });
+
+  const [historyStatus, setHistoryStatus] = React.useState({ disableUndo: true, disableRedo: true });
+
+  React.useEffect(() => {
+    if (history.current.schema !== schema || history.current.extraProps !== extraProps) {
+      history.past.push(history.current);
+      history.current = { schema, extraProps };
+      history.future = [];
+      setHistoryStatus({ disableUndo: false, disableRedo: true });
+    }
+  }, [history, schema, extraProps, historyStatus]);
+
+  const handleUndo = () => {
+    const past = history.past.pop();
+    if (past) {
+      history.future.push(history.current);
+      history.current = past;
+      setSchema(past.schema);
+      setExtraProps(past.extraProps);
+      setHistoryStatus({ disableUndo: history.past.length === 0, disableRedo: false });
+    }
+  };
+
+  const handleRedo = () => {
+    const future = history.future.pop();
+    if (future) {
+      history.past.push(history.current);
+      history.current = future;
+      setSchema(future.schema);
+      setExtraProps(future.extraProps);
+      setHistoryStatus({ disableUndo: false, disableRedo: history.future.length === 0 });
+    }
+  };
 
   const handleNew = React.useCallback(() => {
-    return;
     setSchema({ type: 'object' });
     setExtraProps({});
   }, [setSchema, setExtraProps]);
 
-  const handleOpen = React.useCallback<React.ChangeEventHandler<HTMLInputElement>>(async (e) => {
-    return;
-    try {
-      const s = await read(e);
-      const { schema, extraProps } = JSON.parse(s);
-      setSchema(schema as JSONSchema7);
-      setExtraProps(extraProps);
-    } catch (e) {
-      message.error('Invalid json file!');
-    }
-  }, []);
+  const handleOpen = React.useCallback<React.ChangeEventHandler<HTMLInputElement>>(
+    async (e) => {
+      try {
+        const s = await read(e);
+        const { schema, extraProps } = JSON.parse(s);
+        setSchema(schema as JSONSchema7);
+        setExtraProps(extraProps);
+      } catch (e) {
+        message.error('Invalid json file!');
+      }
+    },
+    [setSchema, setExtraProps]
+  );
 
-  const inputRef = React.useRef(null);
+  const handleSave = () => {
+    write('form', { schema, extraProps });
+  };
+
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleLoad = React.useCallback(() => {
+    inputRef.current?.click();
+  }, [inputRef]);
 
   return (
     <span>
@@ -68,118 +119,28 @@ export const Toolbar: React.FC = () => {
         <Button style={buttonStyle} onClick={handleNew} icon={<FileAddOutlined />} />
       </Tooltip>
       <Tooltip title="Open">
-        <Button
-          style={buttonStyle}
-          onClick={() => {
-            // inputRef.current?.click(null)
-          }}
-          icon={<FolderOpenOutlined />}
-        />
+        <Button style={buttonStyle} onClick={handleLoad} icon={<FolderOpenOutlined />} />
       </Tooltip>
       <Tooltip title="Save">
-        <Button style={buttonStyle} onClick={() => {}} icon={<SaveOutlined />} />
+        <Button style={buttonStyle} onClick={handleSave} icon={<SaveOutlined />} />
       </Tooltip>
       <Tooltip title="Undo">
-        <Button style={buttonStyle} onClick={() => {}} disabled={false /*!past.length*/} icon={<UndoOutlined />} />
+        <Button style={buttonStyle} onClick={handleUndo} disabled={historyStatus.disableUndo} icon={<UndoOutlined />} />
       </Tooltip>
       <Tooltip title="Redo">
-        <Button style={buttonStyle} onClick={() => {}} disabled={false /*!future.length*/} icon={<RedoOutlined />} />
+        <Button style={buttonStyle} onClick={handleRedo} disabled={historyStatus.disableRedo} icon={<RedoOutlined />} />
       </Tooltip>
       {/*<Select
-        mode="multiple"
-        style={{ width: 290, marginLeft: 12 }}
-        value={settings.subViews}
-        onChange={updateSettings}
-        placeholder="Select sub views..."
-      >
-        <Select.Option key="schema">Schema</Select.Option>
-        <Select.Option key="uiSchema">Ui Schema</Select.Option>
-        <Select.Option key="formData">Data</Select.Option>
-      </Select>*/}
-    </span>
-  );
-};
-
-/*
-
-class Toolbar_ extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-  save = () => {
-    const { name, schema, uiSchema } = this.props.tree.present[0];
-    write(name, { name, schema, uiSchema });
-  };
-  open = async (e) => {
-    const s = await read(e);
-    try {
-      const { name, schema, uiSchema } = JSON.parse(s);
-      this.props.setTree({ name, schema, uiSchema });
-    } catch (e) {
-      message.error('Invalid json file!');
-    }
-  };
-  render() {
-    const { tree, undo, redo, settings, updateSettings, newForm } = this.props;
-    const { past, future } = tree;
-    return (
-      <span>
-        <input ref={(ref) => (this.loadFile = ref)} type="file" accept="application/json" onChange={this.open} hidden />
-        <Tooltip title="New">
-          <Button style={buttonStyle} onClick={newForm} icon={<FileAddOutlined />} />
-        </Tooltip>
-        <Tooltip title="Open">
-          <Button
-            style={buttonStyle}
-            onClick={() => this.loadFile && this.loadFile.click()}
-            icon={<FolderOpenOutlined />}
-          />
-        </Tooltip>
-        <Tooltip title="Save">
-          <Button style={buttonStyle} onClick={this.save} icon={<SaveOutlined />} />
-        </Tooltip>
-        <Tooltip title="Undo">
-          <Button style={buttonStyle} onClick={undo} disabled={!past.length} icon={<UndoOutlined />} />
-        </Tooltip>
-        <Tooltip title="Redo">
-          <Button style={buttonStyle} onClick={redo} disabled={!future.length} icon={<RedoOutlined />} />
-        </Tooltip>
-        <Select
           mode="multiple"
           style={{ width: 290, marginLeft: 12 }}
           value={settings.subViews}
           onChange={updateSettings}
           placeholder="Select sub views..."
-        >
+          >
           <Select.Option key="schema">Schema</Select.Option>
           <Select.Option key="uiSchema">Ui Schema</Select.Option>
           <Select.Option key="formData">Data</Select.Option>
-        </Select>
-      </span>
-    );
-  }
-}
-
-export default connect(
-  ({ tree, settings }) => ({ tree, settings }),
-  (dispatch) => ({
-    newForm: () =>
-      dispatch({
-        type: 'TREE_CLEAR',
-      }),
-    setTree: (payload) =>
-      dispatch({
-        type: 'TREE_SET_TREE',
-        payload,
-      }),
-    undo: () => dispatch({ type: ActionTypes.UNDO }),
-    redo: () => dispatch({ type: ActionTypes.REDO }),
-    updateSettings: (subViews) =>
-      dispatch({
-        type: 'SETTINGS_UPDATE',
-        payload: { subViews },
-      }),
-  })
-)(Toolbar);
-*/
+          </Select>*/}
+    </span>
+  );
+};

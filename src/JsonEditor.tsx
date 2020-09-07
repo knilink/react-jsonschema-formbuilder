@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Input, Alert } from 'antd';
+import { Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 
 const { TextArea } = Input;

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 import { Popconfirm } from 'antd';
 import { PlusCircleOutlined, CloseCircleFilled } from '@ant-design/icons';
 import { InlineEditor } from '../InlineEditor';

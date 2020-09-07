@@ -1,10 +1,9 @@
 import * as React from 'react';
-// import { connect } from 'react-redux';
 import { Menu } from 'antd';
 import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 import { FormBuilderContext } from '../FormBuilderContext';
 import { addSchemaNode, addExtraPropsNode, getSchemaByPath } from '../utils';
-const { SubMenu, Item } = Menu;
+const { Item } = Menu;
 
 function nameGen(name: string, occupied: string[]) {
   let n = 1;

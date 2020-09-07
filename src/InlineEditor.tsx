@@ -17,7 +17,7 @@ export const InlineEditor: React.FC<
       setEditing(true);
       setMouseOver(false);
     },
-    [setEditing, inputRef, value]
+    [setEditing, value, setMouseOver]
   );
 
   React.useEffect(() => {
@@ -36,7 +36,7 @@ export const InlineEditor: React.FC<
 
   const handleCancelEditing = React.useCallback(() => {
     setEditing(false);
-  }, [value]);
+  }, []);
 
   const handleChange = React.useCallback<React.ChangeEventHandler<HTMLInputElement>>((e) => {
     setEditingValue(e.target.value);
